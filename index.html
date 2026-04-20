@@ -764,6 +764,29 @@
       50%  { transform: scale(0.95) translateY(40px); opacity: 0.7; filter: brightness(1.2); }
       100% { transform: scale(0.6) translateY(260px); opacity: 0; filter: brightness(1); }
     }
+    @keyframes packSuperFlyaround {
+      0%   { opacity: 0;  transform: perspective(700px) scale(0.2) rotateY(0deg); }
+      10%  { opacity: 1;  transform: perspective(700px) translateX(-28vw) translateY(-18vh) rotateY(360deg) scale(0.78); }
+      25%  { transform: perspective(700px) translateX(26vw) translateY(-14vh) rotateY(720deg) scale(0.88); }
+      42%  { transform: perspective(700px) translateX(-18vw) translateY(16vh) rotateY(1080deg) scale(0.92); }
+      60%  { transform: perspective(700px) translateX(22vw) translateY(8vh) rotateY(1260deg) scale(0.97); }
+      76%  { transform: perspective(700px) translateX(-10vw) translateY(-8vh) rotateY(1440deg) scale(1.02); }
+      90%  { transform: perspective(700px) translateX(5vw) translateY(3vh) rotateY(1530deg) scale(1.05); }
+      100% { opacity: 1;  transform: perspective(700px) translateX(0) translateY(0) rotateY(1620deg) scale(1); }
+    }
+    .pack-super-flyaround {
+      animation: packSuperFlyaround 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    }
+    @keyframes packLegendaryBuildup {
+      0%   { opacity: 0; transform: perspective(700px) scale(0.3) rotateY(0deg); }
+      40%  { opacity: 1; transform: perspective(700px) scale(1.15) rotateY(180deg); }
+      65%  { transform: perspective(700px) scale(1.0) rotateY(300deg); }
+      82%  { transform: perspective(700px) scale(1.08) rotateY(345deg); }
+      100% { opacity: 1; transform: perspective(700px) scale(1) rotateY(360deg); }
+    }
+    .pack-legendary-buildup {
+      animation: packLegendaryBuildup 0.85s cubic-bezier(0.3, 1.4, 0.6, 1) forwards;
+    }
 
     /* Cards flying out of the pack */
     #pack-burst-cards-out {
@@ -2867,6 +2890,23 @@ const SFX = (() => {
       g.gain.exponentialRampToValueAtTime(0.001, t + 0.032);
       osc.start(t); osc.stop(t + 0.05);
     },
+    superLegendaryBuild() {
+      note(31,  0,    2.0, 0.5,  'sawtooth');
+      note(47,  0.05, 1.9, 0.42, 'sine');
+      sweep(55,  600,  0,    1.8,  0.28, 'sawtooth');
+      sweep(30,  300,  0.1,  1.9,  0.22, 'sine');
+      sweep(800, 200,  0.35, 0.22, 0.18, 'sine');
+      sweep(1000, 200, 0.75, 0.22, 0.16, 'sine');
+      sweep(1200, 200, 1.15, 0.22, 0.15, 'sine');
+      noise(0,   2.0,  0.14, 2500);
+      noise(1.7, 0.3,  0.2,  6000);
+    },
+    legendaryBuild() {
+      note(41,  0,    0.9, 0.4,  'sawtooth');
+      note(65,  0.05, 0.8, 0.32, 'sine');
+      sweep(100, 900, 0,   0.8,  0.22, 'sawtooth');
+      noise(0, 0.8, 0.12, 4000);
+    },
     rarityReveal(key) {
       const s = {
         normal:      () => { note(523,0,0.25,0.28,'triangle'); note(659,0.14,0.3,0.24,'triangle'); },
@@ -3100,9 +3140,35 @@ function showPackBurst(rarityKey, rarityMap, callback) {
 
   overlay.classList.add('active');
 
-  // Kick off pack entrance + shake
-  void card.offsetWidth;
-  card.classList.add('pack-big-enter');
+  // Pre-animation delay for high rarities (pack spins/flies before opening)
+  let preDelay = 0;
+  if (rarityKey === 'super_legendary') {
+    preDelay = 2000;
+    void card.offsetWidth;
+    card.classList.add('pack-super-flyaround');
+    try { SFX.superLegendaryBuild(); } catch(e) {}
+    [400, 850, 1350].forEach(ms => setTimeout(() => { try { SFX.whoosh(); } catch(e){} }, ms));
+    setTimeout(() => {
+      card.classList.remove('pack-super-flyaround');
+      void card.offsetWidth;
+      card.classList.add('pack-big-enter');
+    }, preDelay);
+  } else if (rarityKey === 'legendary') {
+    preDelay = 850;
+    void card.offsetWidth;
+    card.classList.add('pack-legendary-buildup');
+    try { SFX.legendaryBuild(); } catch(e) {}
+    setTimeout(() => { try { SFX.whoosh(); } catch(e){} }, 380);
+    setTimeout(() => {
+      card.classList.remove('pack-legendary-buildup');
+      void card.offsetWidth;
+      card.classList.add('pack-big-enter');
+    }, preDelay);
+  } else {
+    // Kick off pack entrance + shake
+    void card.offsetWidth;
+    card.classList.add('pack-big-enter');
+  }
 
   // Phase 1: Top rips off, inner light emerges
   setTimeout(() => {
@@ -3115,7 +3181,7 @@ function showPackBurst(rarityKey, rarityMap, callback) {
     try { SFX.whoosh(); } catch (e) {}
     // First particle burst comes out of the opening
     spawnParticles(pLayer, r.color, Math.floor(particleCount * 0.5));
-  }, 850);
+  }, 850 + preDelay);
 
   // Phase 2: Light beam shoots up + screen shake
   setTimeout(() => {
@@ -3125,7 +3191,7 @@ function showPackBurst(rarityKey, rarityMap, callback) {
       setTimeout(() => document.body.classList.remove('screen-shake'), rarityKey === 'super_legendary' ? 750 : 450);
     }
     if (profile.rings) spawnShockwave(pLayer, profile.rings, rarityKey === 'super_legendary' ? 8 : 6);
-  }, 1080);
+  }, 1080 + preDelay);
 
   // Phase 3: Cards fly out of the pack one-by-one
   // Fan positions (left → right), y slightly arched
@@ -3162,7 +3228,7 @@ function showPackBurst(rarityKey, rarityMap, callback) {
       // whoosh per card
       setTimeout(() => { try { SFX.tick(); } catch(e){} }, i * profile.cardDelay * 1000);
     });
-  }, 1260);
+  }, 1260 + preDelay);
 
   // Phase 4: Label flies in
   setTimeout(() => {
@@ -3170,16 +3236,16 @@ function showPackBurst(rarityKey, rarityMap, callback) {
     if (profile.confetti) spawnConfetti(pLayer, profile.confetti);
     if (rarityKey === 'super_legendary') spawnShockwave(pLayer, 2, 10);
     spawnParticles(pLayer, r.color, Math.floor(particleCount * 0.5));
-  }, 1680 + Math.min(extraHold, 260));
+  }, 1680 + preDelay + Math.min(extraHold, 260));
 
   // Phase 5: Pack drops/fades out, cards remain
   setTimeout(() => {
     card.classList.remove('pack-big-enter');
     card.classList.add('pack-big-explode');
-  }, 1860 + Math.min(extraHold, 360));
+  }, 1860 + preDelay + Math.min(extraHold, 360));
 
-  setTimeout(() => { flash.classList.add('on'); }, 2050 + Math.min(extraHold, 440));
-  setTimeout(() => { flash.classList.remove('on'); }, 2160 + Math.min(extraHold, 440));
+  setTimeout(() => { flash.classList.add('on'); }, 2050 + preDelay + Math.min(extraHold, 440));
+  setTimeout(() => { flash.classList.remove('on'); }, 2160 + preDelay + Math.min(extraHold, 440));
 
   // Handoff: fade everything EXCEPT the fanned cards, then fire callback
   // so showPackResult / showItemPackResult can FLIP the picks from fan → row
@@ -3192,7 +3258,7 @@ function showPackBurst(rarityKey, rarityMap, callback) {
     pLayer.innerHTML = '';
     callback();
     // overlay itself + cardsOut get cleared by finishPackBurstHandoff()
-  }, 2320 + extraHold);
+  }, 2320 + preDelay + extraHold);
 }
 
 function resetPackBurstOverlay() {
@@ -3227,7 +3293,7 @@ function resetPackBurstOverlay() {
   if (innerLight) innerLight.classList.remove('on');
   if (beamEl) beamEl.classList.remove('on');
   if (labelEl) labelEl.className = '';
-  if (cardEl) cardEl.className = '';
+  if (cardEl) { cardEl.className = ''; cardEl.classList.remove('pack-super-flyaround', 'pack-legendary-buildup'); }
   if (shellEl) shellEl.className = 'pack-real-shell';
   if (bodyEl) bodyEl.classList.remove('open');
   _burstFanPositions = [];
