@@ -1580,7 +1580,7 @@
     .hidden { display: none; }
 
     .box-score-table {
-      width: min(760px, 90vw);
+      width: min(860px, 90vw);
       border-collapse: collapse;
       font-size: 8px;
       letter-spacing: 1px;
@@ -1604,6 +1604,9 @@
     }
     .box-score-table tr:last-child td {
       border-bottom: none;
+    }
+    .box-score-summary {
+      margin-bottom: 14px;
     }
 
     /* ═══════ SCHEDULE ═══════ */
@@ -2037,7 +2040,14 @@ const ECONOMY_TYPES = [
   { name: 'All Stars',  effects: ['+$25K TICKET REV PER 90+ OVR PLAYER','+$50K TICKET REV PER 90+ OVR PLAYER','+$100K TICKET REV PER 90+ OVR PLAYER'] },
   { name: 'Morale',     effects: ['+$10K WIN BONUS PER INV PLAYER',    '+$20K WIN BONUS PER INV PLAYER',     '+$30K WIN BONUS PER INV PLAYER']      },
   { name: 'Interest',   effects: ['+$10K TICKET REV EACH GAME (COMPOUNDS)', '+$20K TICKET REV EACH GAME (COMPOUNDS)', '+$30K TICKET REV EACH GAME (COMPOUNDS)'] },
-  { name: 'Incentives', effects: ['+$150K WIN BONUS',                    '+$250K WIN BONUS',                    '+$500K WIN BONUS']                   }
+  { name: 'Incentives', effects: ['+$150K WIN BONUS',                    '+$250K WIN BONUS',                    '+$500K WIN BONUS']                   },
+  { name: 'Dimes',      effects: ['+$300 TICKET REV PER ASSIST',         '+$650 TICKET REV PER ASSIST',         '+$1K TICKET REV PER ASSIST']         },
+  { name: 'Tanking',    effects: ['PLAYER PACK I EVERY 3 LOSSES',        'PLAYER PACK I EVERY 2 LOSSES',        'PLAYER PACK I EVERY LOSS']          },
+  { name: 'Streak',     effects: ['+$100K PER WIN AFTER 3 STRAIGHT',     '+$200K PER WIN AFTER 3 STRAIGHT',     '+$300K PER WIN AFTER 3 STRAIGHT']    },
+  { name: 'Showtime',   effects: ['+$250 PER POINT SCORED OVER 100',     '+$500 PER POINT SCORED OVER 100',     '+$1K PER POINT SCORED OVER 100']     },
+  { name: 'Lockdown',   effects: ['+$250 PER OPP POINT BELOW 100',       '+$500 PER OPP POINT BELOW 100',       '+$1K PER OPP POINT BELOW 100']       },
+  { name: 'Robber',     effects: ['+$1K PER FORCED TURNOVER',            '+$2K PER FORCED TURNOVER',            '+$3K PER FORCED TURNOVER']           },
+  { name: 'Splash',     effects: ['+$500 PER THREE MADE',                '+$1K PER THREE MADE',                 '+$1.5K PER THREE MADE']              }
 ];
 
 const GEAR_TYPES = [
@@ -2597,6 +2607,26 @@ const ECONOMY_ART = {
   `)
 };
 
+[
+  ['Dimes', '#6dff8a'],
+  ['Tanking', '#8b5a2b'],
+  ['Streak', '#ffd447'],
+  ['Showtime', '#e94560'],
+  ['Lockdown', '#4a86c5'],
+  ['Robber', '#c9beff'],
+  ['Splash', '#6ecbff']
+].forEach(([name, color]) => {
+  ECONOMY_ART[name] = svgWrap(`
+    <rect x="2" y="11" width="12" height="2" fill="#000"/>
+    <rect x="3" y="4" width="10" height="7" fill="${color}"/>
+    <rect x="3" y="4" width="10" height="1" fill="#fff"/>
+    <rect x="4" y="6" width="8" height="1" fill="#000"/>
+    <rect x="5" y="8" width="6" height="1" fill="#000"/>
+    <rect x="7" y="2" width="2" height="2" fill="${color}"/>
+    <rect x="6" y="13" width="4" height="1" fill="${color}"/>
+  `);
+});
+
 const GEAR_ART = {
   'Headband': svgWrap(`
     <rect x="2" y="6" width="12" height="4" fill="#cc1010"/>
@@ -2754,6 +2784,7 @@ const OFFENSE_STYLES   = ['Get to the Post', 'Slow it Down', 'Play Through Star'
 const DEFENSIVE_STYLES = ['Protect the Paint', 'No Threes', 'Trap', 'Star Stopper', 'Balanced', 'Full Court Pressure'];
 
 const STARTING_CASH = 4_000_000;
+const BASE_TICKET_REVENUE = 100_000;
 const FINAL_REGULAR_SEASON_WEEK = 27;
 const DIFFICULTY_CURVES = {
   easy:     { label: 'EASY',     weeklyGrowth: (90 - 50) / (FINAL_REGULAR_SEASON_WEEK - 1) },
@@ -3500,6 +3531,7 @@ function flipPicksFromBurst(pickCards) {
 const state = {
   cash: 0,
   totalCashAccumulated: 0,
+  ticketRevenue: BASE_TICKET_REVENUE,
   week: 1,
   difficulty: 'normal',
   lineup: POSITIONS.map(pos => generatePlayer(50, pos)),
@@ -3519,6 +3551,8 @@ const state = {
   simSpeed: 500,
   wins: 0,
   losses: 0,
+  winStreak: 0,
+  tankingLosses: 0,
   gamesPlayed: 0,
   packsOpened: 0,
   currentGameIdx: 0,
@@ -3539,13 +3573,70 @@ const ECON_AMOUNTS = {
   'All Stars':  [25_000, 50_000, 100_000],
   'Morale':     [10_000, 20_000, 30_000],
   'Interest':   [ 10_000,  20_000,    30_000],
-  'Incentives': [150_000, 250_000, 500_000]
+  'Incentives': [150_000, 250_000, 500_000],
+  'Dimes':      [300, 650, 1_000],
+  'Streak':     [100_000, 200_000, 300_000],
+  'Showtime':   [250, 500, 1_000],
+  'Lockdown':   [250, 500, 1_000],
+  'Robber':     [1_000, 2_000, 3_000],
+  'Splash':     [500, 1_000, 1_500]
 };
 
 function sumEcon(subtype) {
   return state.items.reduce((s, it) =>
     (it.kind === 'economy' && it.subtype === subtype) ? s + ECON_AMOUNTS[subtype][it.tier] : s
   , 0);
+}
+
+function bestEconTier(subtype) {
+  return state.items.reduce((best, it) =>
+    (it.kind === 'economy' && it.subtype === subtype) ? Math.max(best, it.tier) : best
+  , -1);
+}
+
+function homeGameSummary(result) {
+  return result && result.boxScore && result.boxScore.summary && result.boxScore.summary[0];
+}
+
+function awayGameSummary(result) {
+  return result && result.boxScore && result.boxScore.summary && result.boxScore.summary[1];
+}
+
+function permanentTicketRevenueGrowth(result) {
+  const home = homeGameSummary(result) || {};
+  const away = awayGameSummary(result) || {};
+  let growth = 0;
+  growth += (home.assists || 0) * sumEcon('Dimes');
+  growth += Math.max(0, (home.points || 0) - 100) * sumEcon('Showtime');
+  growth += Math.max(0, 100 - (away.points || 0)) * sumEcon('Lockdown');
+  growth += (home.turnoversForced || 0) * sumEcon('Robber');
+  growth += (home.tpm || 0) * sumEcon('Splash');
+  return growth;
+}
+
+function gameEconomyReward(result) {
+  let reward = 0;
+  if (result.win && state.winStreak > 3) reward += sumEcon('Streak');
+  return reward;
+}
+
+function queueEarnedPlayerPackI(reason) {
+  const pack = PACKS.find(p => p.id === 'I');
+  if (!pack) return;
+  packQueue.push({ kind: 'player', pack, countOpened: true });
+  addLogEntry(`${reason} - PLAYER PACK I EARNED`, 'quarter');
+}
+
+function handleTankingReward(result) {
+  if (result.win) return;
+  const tankingTier = bestEconTier('Tanking');
+  if (tankingTier < 0) return;
+  const threshold = [3, 2, 1][tankingTier];
+  state.tankingLosses++;
+  if (state.tankingLosses >= threshold) {
+    state.tankingLosses -= threshold;
+    queueEarnedPlayerPackI(`TANKING ${TIER_ROMAN[tankingTier]}`);
+  }
 }
 
 function getBaseOVR(p) {
@@ -3802,6 +3893,7 @@ function runPackQueue() {
     return;
   }
   const next = packQueue.shift();
+  if (next.countOpened) state.packsOpened++;
   if (next.kind === 'player') openPack(next.pack);
   else openItemPack(next.pack);
 }
@@ -3815,6 +3907,7 @@ function startWithDifficulty(difficulty) {
   state.difficulty = difficulty;
   state.cash = STARTING_CASH;
   state.totalCashAccumulated = STARTING_CASH;
+  state.ticketRevenue = BASE_TICKET_REVENUE;
   document.getElementById('home').classList.remove('active');
   document.getElementById('shop').classList.add('active');
   MUSIC.play();
@@ -3955,11 +4048,23 @@ function isStarTarget(offense, player) {
   return offense && player && teamStar(offense) === player;
 }
 
-function defensiveStyleTurnoverChance(defTeam) {
+function clampNum(value, min, max) {
+  return Math.max(min, Math.min(max, value));
+}
+
+function defensiveStyleTurnoverChance(defTeam, ballHandler, defender) {
   const style = defensiveStyle(defTeam);
-  if (style === 'Trap') return 0.10;
-  if (style === 'Full Court Pressure') return 0.05;
-  return 0;
+  const base = 0.02;
+  const styleBonus = style === 'Trap' ? 0.08 :
+                     style === 'Full Court Pressure' ? 0.03 : 0;
+  const ballAttrs = teamAttrs(ballHandler);
+  const ballSecurity = (ballAttrs.PSS * 0.65) + (ballAttrs.IQ * 0.35);
+  const defPressure = defensiveContestDEF(defTeam, defender);
+  const pressureEdge = (defPressure - ballSecurity) / 100;
+  const adjusted = (base + styleBonus) * (1 + pressureEdge);
+  const max = style === 'Trap' ? 0.18 :
+              style === 'Full Court Pressure' ? 0.10 : 0.06;
+  return clampNum(adjusted, base, max);
 }
 
 function defensiveStyleShotDelta(defTeam, offense, action, shooter) {
@@ -4103,6 +4208,21 @@ function addGameStat(gameStats, player, key, amount = 1) {
   row[key] += amount;
 }
 
+function freshTeamGameStats(name) {
+  return {
+    name,
+    points: 0,
+    assists: 0,
+    rebounds: 0,
+    fgm: 0,
+    fga: 0,
+    tpm: 0,
+    tpa: 0,
+    turnovers: 0,
+    turnoversForced: 0
+  };
+}
+
 function commitGameStats(gameStats) {
   gameStats.forEach((row, player) => {
     const stats = ensurePlayerStats(player);
@@ -4131,26 +4251,68 @@ function boxScoreFromGameStats(gameStats) {
   }));
 }
 
+function boxScoreSummaryFromTeamStats(teamStats) {
+  return Object.values(teamStats).map(row => ({
+    name: row.name,
+    points: row.points,
+    assists: row.assists,
+    rebounds: row.rebounds,
+    fgm: row.fgm,
+    fga: row.fga,
+    tpm: row.tpm,
+    tpa: row.tpa,
+    turnovers: row.turnovers,
+    turnoversForced: row.turnoversForced
+  }));
+}
+
 function renderBoxScore(boxScore = state.lastBoxScore) {
   const body = document.getElementById('box-score-body');
-  if (!boxScore || !boxScore.length) {
+  const players = Array.isArray(boxScore) ? boxScore : (boxScore && boxScore.players);
+  const summary = Array.isArray(boxScore) ? null : (boxScore && boxScore.summary);
+  if (!players || !players.length) {
     body.innerHTML = `<div class="inv-empty">NO BOX SCORE YET</div>`;
     return;
   }
   body.innerHTML = `
+    ${summary && summary.length ? `
+      <table class="box-score-table box-score-summary">
+        <thead>
+          <tr><th>TEAM</th><th>PTS</th><th>AST</th><th>REB</th><th>FGA</th><th>FGM</th><th>3PA</th><th>3PM</th><th>TO</th><th>TF</th></tr>
+        </thead>
+        <tbody>
+          ${summary.map(row => `
+            <tr>
+              <td>${row.name.toUpperCase()}</td>
+              <td>${row.points}</td>
+              <td>${row.assists}</td>
+              <td>${row.rebounds}</td>
+              <td>${row.fga}</td>
+              <td>${row.fgm}</td>
+              <td>${row.tpa}</td>
+              <td>${row.tpm}</td>
+              <td>${row.turnovers}</td>
+              <td>${row.turnoversForced}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    ` : ''}
     <table class="box-score-table">
       <thead>
-        <tr><th>PLAYER</th><th>PTS</th><th>AST</th><th>REB</th><th>FG%</th><th>3P%</th></tr>
+        <tr><th>PLAYER</th><th>PTS</th><th>AST</th><th>REB</th><th>FGA</th><th>FGM</th><th>3PA</th><th>3PM</th></tr>
       </thead>
       <tbody>
-        ${boxScore.map(row => `
+        ${players.map(row => `
           <tr>
             <td>${row.position} ${row.name.toUpperCase()}</td>
             <td>${row.points}</td>
             <td>${row.assists}</td>
             <td>${row.rebounds}</td>
-            <td>${pct(row.fgm, row.fga)}</td>
-            <td>${pct(row.tpm, row.tpa)}</td>
+            <td>${row.fga}</td>
+            <td>${row.fgm}</td>
+            <td>${row.tpa}</td>
+            <td>${row.tpm}</td>
           </tr>
         `).join('')}
       </tbody>
@@ -4165,9 +4327,11 @@ function runPossession(offense, defense) {
   let ovmBoost = 1;
   let passer   = null;
   let shooter  = player;
-  const turnoverChance = defensiveStyleTurnoverChance(defense);
+  const ballDefender = getMatchup(defense, player.position);
+  const turnoverChance = defensiveStyleTurnoverChance(defense, player, ballDefender);
 
   if (turnoverChance > 0 && Math.random() < turnoverChance) {
+    const style = defensiveStyle(defense);
     return {
       secs,
       shooter: player,
@@ -4177,7 +4341,9 @@ function runPossession(offense, defense) {
       points: 0,
       shotType: 'TO',
       turnover: true,
-      note: defensiveStyle(defense) === 'Trap' ? 'TRAP FORCES TURNOVER' : 'FULL COURT PRESSURE FORCES TURNOVER'
+      note: style === 'Trap' ? 'TRAP FORCES TURNOVER' :
+            style === 'Full Court Pressure' ? 'FULL COURT PRESSURE FORCES TURNOVER' :
+            'DEFENSE FORCES TURNOVER'
     };
   }
 
@@ -4257,6 +4423,10 @@ async function simulateGame(home, away) {
   let quarter = 1;
   let clock = QUARTER_SECS;
   const gameStats = makeGameStats(home.players);
+  const teamStats = {
+    home: freshTeamGameStats(home.name),
+    away: freshTeamGameStats(away.name)
+  };
 
   renderHUD(home, away, homeScore, awayScore, quarter, clock, 24);
   addLogEntry(`TIP-OFF — ${possession === 'home' ? home.name.toUpperCase() : away.name.toUpperCase()} BALL`, 'quarter');
@@ -4270,12 +4440,22 @@ async function simulateGame(home, away) {
     clock -= useSecs;
     let nextPossession = possession === 'home' ? 'away' : 'home';
     const teamTag  = possession === 'home' ? `[${home.name.substring(0,6).toUpperCase()}]` : `[${away.name.substring(0,6).toUpperCase()}]`;
+    const offenseStats = teamStats[possession];
+    const defenseStats = teamStats[nextPossession];
 
     if (res.turnover) {
+      offenseStats.turnovers++;
+      defenseStats.turnoversForced++;
       const who = res.shooter.name.toUpperCase();
       addLogEntry(`${teamTag} ${who} TURNOVER${res.note ? ` - ${res.note}` : ''}`, 'miss');
     } else {
+      offenseStats.fga++;
+      if (res.shotType === '3PT') offenseStats.tpa++;
       if (res.made) {
+        offenseStats.fgm++;
+        offenseStats.points += res.points;
+        if (res.shotType === '3PT') offenseStats.tpm++;
+        if (res.passer) offenseStats.assists++;
         if (possession === 'home') {
           homeScore += res.points;
           addGameStat(gameStats, res.shooter, 'fga');
@@ -4289,13 +4469,16 @@ async function simulateGame(home, away) {
         } else {
           awayScore += res.points;
         }
-      } else if (possession === 'home') {
-        addGameStat(gameStats, res.shooter, 'fga');
-        if (res.shotType === '3PT') addGameStat(gameStats, res.shooter, 'tpa');
-      } else if (possession === 'away') {
-        const rebounder = pickRebounder(home);
-        addGameStat(gameStats, rebounder, 'rebounds');
-        addLogEntry(`[${home.name.substring(0,6).toUpperCase()}] ${rebounder.name.toUpperCase()} REBOUND`, 'quarter');
+      } else {
+        defenseStats.rebounds++;
+        if (possession === 'home') {
+          addGameStat(gameStats, res.shooter, 'fga');
+          if (res.shotType === '3PT') addGameStat(gameStats, res.shooter, 'tpa');
+        } else if (possession === 'away') {
+          const rebounder = pickRebounder(home);
+          addGameStat(gameStats, rebounder, 'rebounds');
+          addLogEntry(`[${home.name.substring(0,6).toUpperCase()}] ${rebounder.name.toUpperCase()} REBOUND`, 'quarter');
+        }
       }
 
       const who = res.shooter.name.toUpperCase();
@@ -4335,7 +4518,15 @@ async function simulateGame(home, away) {
   addLogEntry(`FINAL — ${home.name.toUpperCase()} ${homeScore} / ${away.name.toUpperCase()} ${awayScore} — ${win ? 'WIN!' : 'LOSS'}`, 'quarter');
 
   commitGameStats(gameStats);
-  return { win, homeScore, awayScore, boxScore: boxScoreFromGameStats(gameStats) };
+  return {
+    win,
+    homeScore,
+    awayScore,
+    boxScore: {
+      summary: boxScoreSummaryFromTeamStats(teamStats),
+      players: boxScoreFromGameStats(gameStats)
+    }
+  };
 }
 
 function buildHomeTeam() {
@@ -4364,14 +4555,26 @@ function finishGame(idx, result) {
   state.lastBoxScore = result.boxScore || null;
   state.gameResults[idx] = result;
   state.gamesPlayed++;
-  if (result.win) { state.wins++; SFX.gameWin(); } else { state.losses++; SFX.gameLoss(); }
+  if (result.win) {
+    state.wins++;
+    state.winStreak++;
+    SFX.gameWin();
+  } else {
+    state.losses++;
+    state.winStreak = 0;
+    handleTankingReward(result);
+    SFX.gameLoss();
+  }
 
   // Rewards
-  let reward = 100_000;                             // base ticket revenue per game
+  let reward = state.ticketRevenue;                 // base ticket revenue per game
   reward += sumEcon('Interest') * state.gamesPlayed;  // +tier $ per game, grows each game
   const stars = state.lineup.filter(p => getEffectiveOVR(p) >= 90).length;
   reward += sumEcon('All Stars') * stars;           // +per 90+ OVR lineup player
   reward += sumEcon('Dividends') * state.packsOpened;             // +per pack opened (ticket rev)
+  reward += gameEconomyReward(result);
+  const ticketGrowth = permanentTicketRevenueGrowth(result);
+  state.ticketRevenue += ticketGrowth;
   if (result.win) {
     reward += 100_000;                                            // base win bonus
     reward += sumEcon('Incentives');                              // flat win bonus from incentives
@@ -4385,6 +4588,7 @@ function finishGame(idx, result) {
   renderShop();
 
   addLogEntry(`+${fmtMoney(reward)} EARNED`, 'quarter');
+  if (ticketGrowth > 0) addLogEntry(`TICKET REVENUE +${fmtMoney(ticketGrowth)} PER GAME`, 'quarter');
   // Consume active play (one-game buff)
   if (state.activePlay) {
     const playIdx = state.items.indexOf(state.activePlay);
@@ -4398,6 +4602,7 @@ function finishGame(idx, result) {
   document.getElementById('box-score-btn').classList.remove('hidden');
   document.getElementById('sim-continue').classList.remove('hidden');
   state.currentGameIdx = idx + 1;
+  if (packQueue.length) setTimeout(runPackQueue, 350);
 }
 
 document.getElementById('sim-skip').addEventListener('click', () => {
@@ -4448,12 +4653,24 @@ async function startChampionshipGame() {
   state.lastBoxScore = result.boxScore || null;
   // Give rewards then show continue
   state.gamesPlayed++;
-  if (result.win) { state.wins++; SFX.gameWin(); } else { state.losses++; SFX.gameLoss(); }
-  let reward = 100_000;
+  if (result.win) {
+    state.wins++;
+    state.winStreak++;
+    SFX.gameWin();
+  } else {
+    state.losses++;
+    state.winStreak = 0;
+    handleTankingReward(result);
+    SFX.gameLoss();
+  }
+  let reward = state.ticketRevenue;
   reward += sumEcon('Interest') * state.gamesPlayed;
   const stars = state.lineup.filter(p => getEffectiveOVR(p) >= 90).length;
   reward += sumEcon('All Stars') * stars;
   reward += sumEcon('Dividends') * state.packsOpened;
+  reward += gameEconomyReward(result);
+  const ticketGrowth = permanentTicketRevenueGrowth(result);
+  state.ticketRevenue += ticketGrowth;
   if (result.win) {
     reward += 500_000;  // championship bonus
     reward += sumEcon('Incentives');
@@ -4462,6 +4679,7 @@ async function startChampionshipGame() {
   state.cash += reward;
   state.totalCashAccumulated += reward;
   addLogEntry(`+${fmtMoney(reward)} EARNED`, 'quarter');
+  if (ticketGrowth > 0) addLogEntry(`TICKET REVENUE +${fmtMoney(ticketGrowth)} PER GAME`, 'quarter');
   if (state.activePlay) {
     const playIdx = state.items.indexOf(state.activePlay);
     if (playIdx !== -1) state.items.splice(playIdx, 1);
@@ -4472,6 +4690,7 @@ async function startChampionshipGame() {
   document.getElementById('sim-skip').classList.add('hidden');
   document.getElementById('box-score-btn').classList.remove('hidden');
   document.getElementById('sim-continue').classList.remove('hidden');
+  if (packQueue.length) setTimeout(runPackQueue, 350);
 }
 
 function showEndScreen(result) {
@@ -4486,6 +4705,7 @@ function showEndScreen(result) {
 function resetState() {
   state.cash = 0;
   state.totalCashAccumulated = 0;
+  state.ticketRevenue = BASE_TICKET_REVENUE;
   state.week = 1;
   state.difficulty = 'normal';
   state.lineup = POSITIONS.map(pos => generatePlayer(50, pos));
@@ -4500,6 +4720,8 @@ function resetState() {
   state.playstyle = { defense: 'Man', offense: 'Go Fast', defensive: 'Balanced' };
   state.wins = 0;
   state.losses = 0;
+  state.winStreak = 0;
+  state.tankingLosses = 0;
   state.gamesPlayed = 0;
   state.packsOpened = 0;
   state.currentGameIdx = 0;
@@ -4508,6 +4730,8 @@ function resetState() {
   state.lastBoxScore = null;
   state.isFinalMatch = false;
   state.finalMatchResult = null;
+  packQueue = [];
+  startingFlow = false;
 }
 
 document.getElementById('end-menu-btn').addEventListener('click', () => {
@@ -4775,8 +4999,8 @@ function closePackModal() {
   // reset help text for next opening
   const help = document.getElementById('pick-help');
   if (help) help.textContent = 'CLICK A PLAYER TO ADD TO INVENTORY';
-  // Drain starting-bundle queue if one is active
-  if (startingFlow) {
+  // Drain queued rewards or starting-bundle packs.
+  if (startingFlow || packQueue.length) {
     setTimeout(runPackQueue, 350);
   }
 }
