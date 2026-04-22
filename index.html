@@ -515,7 +515,7 @@
       );
       opacity: 0;
       transform: translate(-50%,-50%);
-      animation: burstRays 0.6s ease-out forwards, burstRaysSpin var(--rays-spin, 6s) linear infinite;
+      animation: burstRays var(--pack-rays-in-time, 0.6s) ease-out forwards, burstRaysSpin var(--rays-spin, 6s) linear infinite;
       mix-blend-mode: screen;
     }
     @keyframes burstRays     { to { opacity: var(--rays-opacity, 0.35); } }
@@ -617,7 +617,7 @@
       100% { transform: translateX(260px) translateY(-180px) rotate(28deg); clip-path: inset(-30px -30px -30px 100%); opacity: 0; }
     }
     .pack-real-top.ripped {
-      animation: packRipLR 0.72s forwards cubic-bezier(0.42, 0, 0.7, 1);
+      animation: packRipLR var(--pack-rip-time, 0.72s) forwards cubic-bezier(0.42, 0, 0.7, 1);
     }
 
     .pack-real-mouth {
@@ -629,7 +629,7 @@
       pointer-events: none;
       transform: translateY(-8px) scaleY(0.72);
       transform-origin: top center;
-      transition: opacity 0.18s ease-out, transform 0.26s ease-out;
+      transition: opacity var(--pack-mouth-opacity-time, 0.18s) ease-out, transform var(--pack-mouth-transform-time, 0.26s) ease-out;
     }
     .pack-real-mouth.open {
       opacity: 1;
@@ -680,7 +680,7 @@
       display: flex; flex-direction: column;
       align-items: center; padding: 18px 14px;
       gap: 10px;
-      transition: top 0.24s ease-out;
+      transition: top var(--pack-body-open-time, 0.24s) ease-out;
     }
     .pack-real-body.open {
       top: 138px;
@@ -722,7 +722,7 @@
       background: radial-gradient(ellipse at center top, #fff 0%, var(--r-color,#fff) 40%, transparent 90%);
       opacity: 0; filter: blur(2px);
       z-index: 5; pointer-events: none;
-      transition: opacity 0.3s, height 0.5s ease-out, top 0.5s ease-out;
+      transition: opacity var(--pack-light-opacity-time, 0.3s), height var(--pack-light-grow-time, 0.5s) ease-out, top var(--pack-light-grow-time, 0.5s) ease-out;
     }
     .pack-inner-light.on {
       opacity: 1; height: 140%; top: 60px;
@@ -736,17 +736,17 @@
       background: linear-gradient(180deg, transparent 0%, var(--r-color,#fff) 20%, #fff 50%, var(--r-color,#fff) 80%, transparent 100%);
       opacity: 0; filter: blur(4px);
       z-index: 3; pointer-events: none;
-      transition: height 0.5s ease-out, opacity 0.3s, width 0.5s ease-out;
+      transition: height var(--pack-light-grow-time, 0.5s) ease-out, opacity var(--pack-light-opacity-time, 0.3s), width var(--pack-light-grow-time, 0.5s) ease-out;
       transform-origin: bottom center;
     }
     .pack-light-beam.on {
       opacity: 0.9; height: 140vh; width: 160px; top: -50vh;
     }
 
-    .pack-big-grow   { animation: packBigGrow 0.5s cubic-bezier(0.2, 1.6, 0.6, 1) forwards; }
-    .pack-big-shake  { animation: packBigShake var(--pack-shake-time, 0.6s) ease-in-out 0.5s both; }
-    .pack-big-enter  { animation: packBigGrow 0.5s cubic-bezier(0.2, 1.6, 0.6, 1) forwards, packBigShake var(--pack-shake-time, 0.6s) ease-in-out 0.5s both; }
-    .pack-big-explode{ animation: packBigExplode 0.42s ease-in forwards !important; }
+    .pack-big-grow   { animation: packBigGrow var(--pack-grow-time, 0.5s) cubic-bezier(0.2, 1.6, 0.6, 1) forwards; }
+    .pack-big-shake  { animation: packBigShake var(--pack-shake-time, 0.6s) ease-in-out var(--pack-shake-delay, 0.5s) both; }
+    .pack-big-enter  { animation: packBigGrow var(--pack-grow-time, 0.5s) cubic-bezier(0.2, 1.6, 0.6, 1) forwards, packBigShake var(--pack-shake-time, 0.6s) ease-in-out var(--pack-shake-delay, 0.5s) both; }
+    .pack-big-explode{ animation: packBigExplode var(--pack-explode-time, 0.42s) ease-in forwards !important; }
     @keyframes packBigGrow {
       0%   { opacity: 0; transform: scale(0) rotate(-15deg); }
       60%  { opacity: 1; transform: scale(1.1) rotate(4deg); }
@@ -775,7 +775,7 @@
       100% { opacity: 1;  transform: perspective(700px) translateX(0) translateY(0) rotateY(1620deg) scale(1); }
     }
     .pack-super-flyaround {
-      animation: packSuperFlyaround 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+      animation: packSuperFlyaround var(--pack-super-fly-time, 2s) cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
     }
     @keyframes packLegendaryBuildup {
       0%   { opacity: 0; transform: perspective(700px) scale(0.3) rotateY(0deg); }
@@ -785,7 +785,7 @@
       100% { opacity: 1; transform: perspective(700px) scale(1) rotateY(360deg); }
     }
     .pack-legendary-buildup {
-      animation: packLegendaryBuildup 0.85s cubic-bezier(0.3, 1.4, 0.6, 1) forwards;
+      animation: packLegendaryBuildup var(--pack-legendary-build-time, 0.85s) cubic-bezier(0.3, 1.4, 0.6, 1) forwards;
     }
 
     /* Cards flying out of the pack */
@@ -806,7 +806,7 @@
       box-shadow: 5px 5px 0 #000, 0 0 30px var(--r-color, #fff), 0 0 60px var(--r-color, #fff);
       opacity: 0;
       transform: translate(0, 0) scale(0.2) rotate(0deg);
-      animation: cardFlyOut 1.3s cubic-bezier(0.25, 1.2, 0.5, 1) forwards;
+      animation: cardFlyOut var(--pack-card-fly-time, 1.3s) cubic-bezier(0.25, 1.2, 0.5, 1) forwards;
       animation-delay: var(--delay, 0s);
       display: flex; align-items: center; justify-content: center;
     }
@@ -844,7 +844,7 @@
       white-space: nowrap;
       max-width: 94vw;
     }
-    .label-big-in { animation: labelBigIn 0.6s cubic-bezier(0.2, 1.8, 0.6, 1) forwards; }
+    .label-big-in { animation: labelBigIn var(--pack-label-in-time, 0.6s) cubic-bezier(0.2, 1.8, 0.6, 1) forwards; }
     @keyframes labelBigIn {
       0%   { opacity: 0; transform: scale(0.3) translateY(40px); letter-spacing: 30px; }
       70%  { opacity: 1; transform: scale(1.1) translateY(0);    letter-spacing: 10px; }
@@ -860,7 +860,7 @@
       background: var(--p-color,#fff);
       box-shadow: 0 0 20px var(--p-color,#fff), 0 0 40px var(--p-color,#fff);
       pointer-events: none;
-      animation: particleFly 1.8s cubic-bezier(0.2, 0.6, 0.3, 1) forwards;
+      animation: particleFly var(--pack-particle-time, 1.8s) cubic-bezier(0.2, 0.6, 0.3, 1) forwards;
     }
     @keyframes particleFly {
       0%   { transform: translate(-50%,-50%) scale(0.2); opacity: 0; }
@@ -873,7 +873,7 @@
       width: 10px; height: 16px;
       background: var(--c-color,#ffd447);
       pointer-events: none;
-      animation: confettiFall 2s ease-in forwards;
+      animation: confettiFall var(--pack-confetti-time, 2s) ease-in forwards;
     }
     @keyframes confettiFall {
       0%   { transform: translate(-50%,-50%) rotate(0deg); opacity: 1; }
@@ -889,7 +889,7 @@
       box-shadow: 0 0 30px var(--r-color,#fff), inset 0 0 30px var(--r-color,#fff);
       opacity: 0;
       pointer-events: none;
-      animation: burstRing 1.2s cubic-bezier(0.12, 0.78, 0.18, 1) forwards;
+      animation: burstRing var(--pack-ring-time, 1.2s) cubic-bezier(0.12, 0.78, 0.18, 1) forwards;
     }
     @keyframes burstRing {
       0% { transform: translate(-50%,-50%) scale(0.2); opacity: 0; }
@@ -901,7 +901,7 @@
     #pack-burst-fullscreen.burst-rarity-super_lucky .pack-real-art,
     #pack-burst-fullscreen.burst-rarity-legendary .pack-real-art,
     #pack-burst-fullscreen.burst-rarity-super_legendary .pack-real-art {
-      animation: foilSweep 1.4s ease-in-out infinite;
+      animation: foilSweep var(--pack-foil-time, 1.4s) ease-in-out infinite;
     }
     #pack-burst-fullscreen.burst-rarity-legendary #pack-burst-card-big,
     #pack-burst-fullscreen.burst-rarity-super_legendary #pack-burst-card-big {
@@ -933,7 +933,7 @@
       60% { transform: translate(-6px, -6px); }
       80% { transform: translate(6px, 4px); }
     }
-    .screen-shake { animation: screenShake 0.45s ease-in-out; }
+    .screen-shake { animation: screenShake var(--pack-screen-shake-time, 0.45s) ease-in-out; }
 
     /* ═══════ INTRO ═══════ */
     #intro { background: #000; align-items: center; justify-content: center; }
@@ -1279,6 +1279,25 @@
       color: #000;
       transform: translate(3px, 3px);
       box-shadow: 0 0 0 #000;
+    }
+    .pack-speed-control {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+    }
+    .pack-speed-slider {
+      width: 100%;
+      accent-color: #ffd447;
+      cursor: pointer;
+    }
+    .pack-speed-value {
+      min-width: 48px;
+      text-align: right;
+      font-size: 12px;
+      color: #fff;
+      letter-spacing: 2px;
+      text-shadow: 2px 2px 0 #000;
     }
 
     /* Player detail */
@@ -1887,6 +1906,13 @@
       <div class="style-group">
         <div class="style-group-label">SIM SPEED</div>
         <div class="style-options" id="speed-options"></div>
+      </div>
+      <div class="style-group">
+        <div class="style-group-label">PACK SPEED</div>
+        <div class="pack-speed-control">
+          <input id="pack-speed-slider" class="pack-speed-slider" type="range" min="1" max="8" step="0.25">
+          <div id="pack-speed-value" class="pack-speed-value">1X</div>
+        </div>
       </div>
       <div class="style-group">
         <div class="style-group-label">AUTO-EQUIP</div>
@@ -3112,8 +3138,8 @@ function spawnParticles(layer, color, count) {
     const size = 8 + Math.random() * 14;
     p.style.width = size + 'px';
     p.style.height = size + 'px';
-    p.style.animationDelay = (Math.random() * 0.25) + 's';
-    p.style.animationDuration = (1.4 + Math.random() * 0.6) + 's';
+    p.style.animationDelay = packSec(Math.random() * 0.25) + 's';
+    p.style.animationDuration = packSec(1.4 + Math.random() * 0.6) + 's';
     layer.appendChild(p);
   }
 }
@@ -3128,8 +3154,8 @@ function spawnConfetti(layer, count) {
     c.style.setProperty('--dx', dx + 'px');
     c.style.setProperty('--dy', dy + 'px');
     c.style.setProperty('--c-color', colors[Math.floor(Math.random() * colors.length)]);
-    c.style.animationDelay = (Math.random() * 0.5) + 's';
-    c.style.animationDuration = (1.6 + Math.random() * 1.2) + 's';
+    c.style.animationDelay = packSec(Math.random() * 0.5) + 's';
+    c.style.animationDuration = packSec(1.6 + Math.random() * 1.2) + 's';
     layer.appendChild(c);
   }
 }
@@ -3139,8 +3165,8 @@ function spawnShockwave(layer, count, scale = 7) {
     const ring = document.createElement('div');
     ring.className = 'burst-spark-ring';
     ring.style.setProperty('--ring-scale', scale + i * 1.3);
-    ring.style.animationDelay = (i * 0.16) + 's';
-    ring.style.animationDuration = (1.05 + i * 0.12) + 's';
+    ring.style.animationDelay = packSec(i * 0.16) + 's';
+    ring.style.animationDuration = packSec(1.05 + i * 0.12) + 's';
     layer.appendChild(ring);
   }
 }
@@ -3183,13 +3209,14 @@ function showPackBurst(rarityKey, rarityMap, callback) {
   overlay.style.setProperty('--r-bg', r.bg);
   overlay.style.setProperty('--burst-intensity', intensity);
   overlay.style.setProperty('--rays-opacity', profile.rays);
-  overlay.style.setProperty('--rays-spin', Math.max(2.2, 7 - intensity) + 's');
+  overlay.style.setProperty('--rays-spin', packSec(Math.max(2.2, 7 - intensity)) + 's');
   overlay.style.setProperty('--bg-peak', profile.bgPeak);
   overlay.style.setProperty('--bg-rest', profile.bgRest);
   overlay.style.setProperty('--bg-scale', 1 + intensity * 0.04);
-  overlay.style.setProperty('--burst-bg-time', (0.45 + intensity * 0.08) + 's');
+  overlay.style.setProperty('--burst-bg-time', packSec(0.45 + intensity * 0.08) + 's');
   overlay.style.setProperty('--art-glow', (8 + intensity * 8) + 'px');
-  overlay.style.setProperty('--pack-shake-time', (0.52 + intensity * 0.1) + 's');
+  overlay.style.setProperty('--pack-shake-time', packSec(0.52 + intensity * 0.1) + 's');
+  applyPackSpeedVars(overlay);
   overlay.style.setProperty('--shake-scale-a', 1 + intensity * 0.025);
   overlay.style.setProperty('--shake-scale-b', 1 + intensity * 0.018);
   overlay.style.setProperty('--shake-rot-a', (-3 - intensity) + 'deg');
@@ -3229,23 +3256,23 @@ function showPackBurst(rarityKey, rarityMap, callback) {
     void card.offsetWidth;
     card.classList.add('pack-super-flyaround');
     try { SFX.superLegendaryBuild(); } catch(e) {}
-    [400, 850, 1350].forEach(ms => setTimeout(() => { try { SFX.whoosh(); } catch(e){} }, ms));
+    [400, 850, 1350].forEach(ms => setTimeout(() => { try { SFX.whoosh(); } catch(e){} }, packMs(ms)));
     setTimeout(() => {
       card.classList.remove('pack-super-flyaround');
       void card.offsetWidth;
       card.classList.add('pack-big-enter');
-    }, preDelay);
+    }, packMs(preDelay));
   } else if (rarityKey === 'legendary') {
     preDelay = 850;
     void card.offsetWidth;
     card.classList.add('pack-legendary-buildup');
     try { SFX.legendaryBuild(); } catch(e) {}
-    setTimeout(() => { try { SFX.whoosh(); } catch(e){} }, 380);
+    setTimeout(() => { try { SFX.whoosh(); } catch(e){} }, packMs(380));
     setTimeout(() => {
       card.classList.remove('pack-legendary-buildup');
       void card.offsetWidth;
       card.classList.add('pack-big-enter');
-    }, preDelay);
+    }, packMs(preDelay));
   } else {
     // Kick off pack entrance + shake
     void card.offsetWidth;
@@ -3257,23 +3284,24 @@ function showPackBurst(rarityKey, rarityMap, callback) {
     top.classList.add('ripped');
     if (mouth) mouth.classList.add('open');
     if (body) body.classList.add('open');
-    setTimeout(() => { top.style.visibility = 'hidden'; }, 720);
+    setTimeout(() => { top.style.visibility = 'hidden'; }, packMs(720));
     innerLight.classList.add('on');
     // Rip sound
     try { SFX.whoosh(); } catch (e) {}
     // First particle burst comes out of the opening
     spawnParticles(pLayer, r.color, Math.floor(particleCount * 0.5));
-  }, 850 + preDelay);
+  }, packMs(850 + preDelay));
 
   // Phase 2: Light beam shoots up + screen shake
   setTimeout(() => {
     beam.classList.add('on');
     if (profile.shake) {
+      document.body.style.setProperty('--pack-screen-shake-time', packSec(rarityKey === 'super_legendary' ? 0.75 : 0.45) + 's');
       document.body.classList.add('screen-shake');
-      setTimeout(() => document.body.classList.remove('screen-shake'), rarityKey === 'super_legendary' ? 750 : 450);
+      setTimeout(() => document.body.classList.remove('screen-shake'), packMs(rarityKey === 'super_legendary' ? 750 : 450));
     }
     if (profile.rings) spawnShockwave(pLayer, profile.rings, rarityKey === 'super_legendary' ? 8 : 6);
-  }, 1080 + preDelay);
+  }, packMs(1080 + preDelay));
 
   // Phase 3: Cards fly out of the pack one-by-one
   // Fan positions (left → right), y slightly arched
@@ -3304,13 +3332,13 @@ function showPackBurst(rarityKey, rarityMap, callback) {
       cEl.style.setProperty('--fx', pos.fx + 'px');
       cEl.style.setProperty('--fy', pos.fy + 'px');
       cEl.style.setProperty('--fr', pos.fr + 'deg');
-      cEl.style.setProperty('--delay', (i * profile.cardDelay) + 's');
+      cEl.style.setProperty('--delay', (i * profile.cardDelay / getPackSpeed()) + 's');
       cEl.innerHTML = `<div class="bc-star">${rarityKey === 'super_legendary' ? '!' : '?'}</div>`;
       cardsOut.appendChild(cEl);
       // whoosh per card
-      setTimeout(() => { try { SFX.tick(); } catch(e){} }, i * profile.cardDelay * 1000);
+      setTimeout(() => { try { SFX.tick(); } catch(e){} }, packMs(i * profile.cardDelay * 1000));
     });
-  }, 1260 + preDelay);
+  }, packMs(1260 + preDelay));
 
   // Phase 4: Label flies in
   setTimeout(() => {
@@ -3318,29 +3346,29 @@ function showPackBurst(rarityKey, rarityMap, callback) {
     if (profile.confetti) spawnConfetti(pLayer, profile.confetti);
     if (rarityKey === 'super_legendary') spawnShockwave(pLayer, 2, 10);
     spawnParticles(pLayer, r.color, Math.floor(particleCount * 0.5));
-  }, 1680 + preDelay + Math.min(extraHold, 260));
+  }, packMs(1680 + preDelay + Math.min(extraHold, 260)));
 
   // Phase 5: Pack drops/fades out, cards remain
   setTimeout(() => {
     card.classList.remove('pack-big-enter');
     card.classList.add('pack-big-explode');
-  }, 1860 + preDelay + Math.min(extraHold, 360));
+  }, packMs(1860 + preDelay + Math.min(extraHold, 360)));
 
-  setTimeout(() => { flash.classList.add('on'); }, 2050 + preDelay + Math.min(extraHold, 440));
-  setTimeout(() => { flash.classList.remove('on'); }, 2160 + preDelay + Math.min(extraHold, 440));
+  setTimeout(() => { flash.classList.add('on'); }, packMs(2050 + preDelay + Math.min(extraHold, 440)));
+  setTimeout(() => { flash.classList.remove('on'); }, packMs(2160 + preDelay + Math.min(extraHold, 440)));
 
   // Handoff: fade everything EXCEPT the fanned cards, then fire callback
   // so showPackResult / showItemPackResult can FLIP the picks from fan → row
   setTimeout(() => {
-    bg.style.transition = 'opacity 0.35s';   bg.style.opacity = '0';
-    rays.style.transition = 'opacity 0.35s'; rays.style.opacity = '0';
-    beam.style.transition = 'opacity 0.25s'; beam.style.opacity = '0';
-    card.style.transition = 'opacity 0.35s, transform 0.35s'; card.style.opacity = '0';
-    label.style.transition = 'opacity 0.3s'; label.style.opacity = '0';
+    bg.style.transition = `opacity ${packSec(0.35)}s`;   bg.style.opacity = '0';
+    rays.style.transition = `opacity ${packSec(0.35)}s`; rays.style.opacity = '0';
+    beam.style.transition = `opacity ${packSec(0.25)}s`; beam.style.opacity = '0';
+    card.style.transition = `opacity ${packSec(0.35)}s, transform ${packSec(0.35)}s`; card.style.opacity = '0';
+    label.style.transition = `opacity ${packSec(0.3)}s`; label.style.opacity = '0';
     pLayer.innerHTML = '';
     callback();
     // overlay itself + cardsOut get cleared by finishPackBurstHandoff()
-  }, 2320 + preDelay + extraHold);
+  }, packMs(2320 + preDelay + extraHold));
 }
 
 function resetPackBurstOverlay() {
@@ -3457,9 +3485,13 @@ function flipPicksFromBurst(pickCards) {
       pc.style.setProperty('--fan-x', `${fan.x}px`);
       pc.style.setProperty('--fan-y', `${fan.y}px`);
       pc.style.setProperty('--fan-rot', `${fan.rot}deg`);
-      pc.style.transitionDelay = `${i * 70}ms`;
+      pc.style.transition = `transform ${packSec(0.42)}s cubic-bezier(0.2, 0.9, 0.35, 1), opacity ${packSec(0.24)}s ease-out`;
+      pc.style.transitionDelay = `${packMs(i * 70)}ms`;
       requestAnimationFrame(() => pc.classList.add('fan-revealed'));
-      setTimeout(() => { pc.style.transitionDelay = ''; }, 500 + i * 70);
+      setTimeout(() => {
+        pc.style.transition = '';
+        pc.style.transitionDelay = '';
+      }, packMs(500 + i * 70));
     });
 
     backs.forEach((b, i) => {
@@ -3471,13 +3503,13 @@ function flipPicksFromBurst(pickCards) {
       b.style.opacity = '1';
       requestAnimationFrame(() => {
         b.style.transition =
-          `transform 0.36s cubic-bezier(0.2, 0.9, 0.35, 1) ${i * 70}ms, opacity 0.2s ease-out ${i * 70}ms`;
+          `transform ${packSec(0.36)}s cubic-bezier(0.2, 0.9, 0.35, 1) ${packMs(i * 70)}ms, opacity ${packSec(0.2)}s ease-out ${packMs(i * 70)}ms`;
         b.style.transform = `translate(${fan.fx}px, ${fan.fy}px) rotate(${fan.rot}deg) rotateY(90deg) scale(0.92)`;
         b.style.opacity = '0';
       });
     });
 
-    setTimeout(resetPackBurstOverlay, 820);
+    setTimeout(resetPackBurstOverlay, packMs(820));
     return;
   }
 
@@ -3496,7 +3528,7 @@ function flipPicksFromBurst(pickCards) {
     pc.style.opacity = '0';
     // Next frame: animate to natural
     requestAnimationFrame(() => requestAnimationFrame(() => {
-      pc.style.transition = 'transform 0.55s cubic-bezier(0.2, 0.9, 0.35, 1), opacity 0.35s ease-out';
+      pc.style.transition = `transform ${packSec(0.55)}s cubic-bezier(0.2, 0.9, 0.35, 1), opacity ${packSec(0.35)}s ease-out`;
       pc.style.transform = '';
       pc.style.opacity = '';
     }));
@@ -3505,7 +3537,7 @@ function flipPicksFromBurst(pickCards) {
       pc.style.transition = '';
       pc.style.transform = '';
       pc.style.opacity = '';
-    }, 700);
+    }, packMs(700));
   });
 
   // Fade out the fanned card backs
@@ -3517,14 +3549,14 @@ function flipPicksFromBurst(pickCards) {
     b.style.transform = `translate(${fan.fx}px, ${fan.fy}px) rotate(${fan.rot}deg)`;
     b.style.opacity = '1';
     requestAnimationFrame(() => {
-      b.style.transition = 'opacity 0.25s, transform 0.4s';
+      b.style.transition = `opacity ${packSec(0.25)}s, transform ${packSec(0.4)}s`;
       b.style.opacity = '0';
       b.style.transform = `translate(${fan.fx}px, ${fan.fy}px) rotate(${fan.rot}deg) scale(1.08)`;
     });
   });
 
   // Fully hide overlay + reset inline styles once handoff animation completes
-  setTimeout(resetPackBurstOverlay, 650);
+  setTimeout(resetPackBurstOverlay, packMs(650));
 }
 
 /* ═══════════════ STATE ═══════════════ */
@@ -3549,6 +3581,7 @@ const state = {
     defensive:  'Balanced'
   },
   simSpeed: 500,
+  packSpeed: 1,
   wins: 0,
   losses: 0,
   winStreak: 0,
@@ -3567,6 +3600,37 @@ const state = {
   isFinalMatch: false,
   finalMatchResult: null
 };
+
+const SETTINGS_STORAGE_KEY = 'letsPlayFives.settings.v1';
+
+function saveLocalSettings() {
+  try {
+    localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify({
+      simSpeed: state.simSpeed,
+      packSpeed: getPackSpeed(),
+      autoEquip: {
+        players: !!state.autoEquip.players,
+        gear: !!state.autoEquip.gear,
+        plays: !!state.autoEquip.plays
+      }
+    }));
+  } catch (e) {}
+}
+
+function loadLocalSettings() {
+  try {
+    const raw = localStorage.getItem(SETTINGS_STORAGE_KEY);
+    if (!raw) return;
+    const saved = JSON.parse(raw);
+    if (SPEED_OPTIONS.some(s => s.ms === saved.simSpeed)) state.simSpeed = saved.simSpeed;
+    if (Number.isFinite(+saved.packSpeed)) state.packSpeed = +saved.packSpeed;
+    if (saved.autoEquip && typeof saved.autoEquip === 'object') {
+      state.autoEquip.players = !!saved.autoEquip.players;
+      state.autoEquip.gear = !!saved.autoEquip.gear;
+      state.autoEquip.plays = !!saved.autoEquip.plays;
+    }
+  } catch (e) {}
+}
 
 const ECON_AMOUNTS = {
   'Dividends':  [10_000, 20_000, 30_000],
@@ -3736,6 +3800,8 @@ const AUTO_EQUIP_OPTIONS = [
   { key: 'gear',    label: 'GEAR'    },
   { key: 'plays',   label: 'PLAYS'   }
 ];
+
+loadLocalSettings();
 
 /* ═══════════════ RENDER ═══════════════ */
 function playerCardHTML(p, extraClass = '', extraAttr = '') {
@@ -4756,9 +4822,21 @@ function renderSettings() {
   row.querySelectorAll('.style-tile').forEach(btn => {
     btn.addEventListener('click', () => {
       state.simSpeed = +btn.dataset.ms;
+      saveLocalSettings();
       renderSettings();
     });
   });
+  const packSpeedSlider = document.getElementById('pack-speed-slider');
+  const packSpeedValue = document.getElementById('pack-speed-value');
+  if (packSpeedSlider && packSpeedValue) {
+    packSpeedSlider.value = getPackSpeed();
+    packSpeedValue.textContent = `${getPackSpeed()}X`;
+    packSpeedSlider.oninput = () => {
+      state.packSpeed = +packSpeedSlider.value;
+      packSpeedValue.textContent = `${getPackSpeed()}X`;
+      saveLocalSettings();
+    };
+  }
   const autoRow = document.getElementById('auto-equip-options');
   autoRow.innerHTML = AUTO_EQUIP_OPTIONS.map(opt => `
     <button class="style-tile ${state.autoEquip[opt.key] ? 'active' : ''}" data-auto="${opt.key}">
@@ -4769,6 +4847,7 @@ function renderSettings() {
     btn.addEventListener('click', () => {
       const key = btn.dataset.auto;
       state.autoEquip[key] = !state.autoEquip[key];
+      saveLocalSettings();
       applyAutoEquip();
       renderLineup();
       renderSettings();
@@ -4811,6 +4890,43 @@ const WIN_IDX     = 52;
 const REEL_ACCEL_MS = 900;
 const REEL_DECEL_MS = 3600;
 const REEL_TENSION_LEAD_MS = 1650;
+const PACK_SPEED_MIN = 1;
+const PACK_SPEED_MAX = 8;
+
+function getPackSpeed() {
+  return Math.min(PACK_SPEED_MAX, Math.max(PACK_SPEED_MIN, Number(state.packSpeed) || PACK_SPEED_MIN));
+}
+
+function packMs(ms) {
+  return Math.max(0, ms / getPackSpeed());
+}
+
+function packSec(seconds) {
+  return Math.max(0, seconds / getPackSpeed());
+}
+
+function applyPackSpeedVars(el) {
+  if (!el) return;
+  el.style.setProperty('--pack-rip-time', `${packSec(0.72)}s`);
+  el.style.setProperty('--pack-mouth-opacity-time', `${packSec(0.18)}s`);
+  el.style.setProperty('--pack-mouth-transform-time', `${packSec(0.26)}s`);
+  el.style.setProperty('--pack-body-open-time', `${packSec(0.24)}s`);
+  el.style.setProperty('--pack-light-opacity-time', `${packSec(0.3)}s`);
+  el.style.setProperty('--pack-light-grow-time', `${packSec(0.5)}s`);
+  el.style.setProperty('--pack-grow-time', `${packSec(0.5)}s`);
+  el.style.setProperty('--pack-shake-delay', `${packSec(0.5)}s`);
+  el.style.setProperty('--pack-explode-time', `${packSec(0.42)}s`);
+  el.style.setProperty('--pack-super-fly-time', `${packSec(2)}s`);
+  el.style.setProperty('--pack-legendary-build-time', `${packSec(0.85)}s`);
+  el.style.setProperty('--pack-card-fly-time', `${packSec(1.3)}s`);
+  el.style.setProperty('--pack-label-in-time', `${packSec(0.6)}s`);
+  el.style.setProperty('--pack-particle-time', `${packSec(1.8)}s`);
+  el.style.setProperty('--pack-confetti-time', `${packSec(2)}s`);
+  el.style.setProperty('--pack-ring-time', `${packSec(1.2)}s`);
+  el.style.setProperty('--pack-foil-time', `${packSec(1.4)}s`);
+  el.style.setProperty('--pack-rays-in-time', `${packSec(0.6)}s`);
+  el.style.setProperty('--pack-screen-shake-time', `${packSec(0.45)}s`);
+}
 
 function buildReelHTML(winKey, odds, rarityMap) {
   const map = rarityMap || RARITIES;
@@ -4864,12 +4980,16 @@ function runReel(pack, rarityMap, onLand) {
 
   void strip.offsetWidth;
 
-  strip.style.transition = 'transform 0.9s cubic-bezier(0.5, 0, 0.9, 0.3)';
+  const reelAccel = packMs(REEL_ACCEL_MS);
+  const reelDecel = packMs(REEL_DECEL_MS);
+  const reelTensionLead = packMs(REEL_TENSION_LEAD_MS);
+
+  strip.style.transition = `transform ${packSec(0.9)}s cubic-bezier(0.5, 0, 0.9, 0.3)`;
   strip.style.transform  = `translateX(${targetX * 0.12}px)`;
 
   // Schedule deceleration phase + ticking
   setTimeout(() => {
-    strip.style.transition = 'transform 3.6s cubic-bezier(0.08, 0.75, 0.2, 1)';
+    strip.style.transition = `transform ${packSec(3.6)}s cubic-bezier(0.08, 0.75, 0.2, 1)`;
     strip.style.transform  = `translateX(${targetX}px)`;
 
     // Ticks: fast → slow, mirroring the reel slowing down
@@ -4880,23 +5000,23 @@ function runReel(pack, rarityMap, onLand) {
       interval = Math.min(interval * 1.09, 520);
       t += interval;
     }
-    tickTimes.forEach(ms => setTimeout(() => SFX.tick(), ms));
-  }, REEL_ACCEL_MS);
+    tickTimes.forEach(ms => setTimeout(() => SFX.tick(), packMs(ms)));
+  }, reelAccel);
 
   setTimeout(() => {
     modal.classList.add('tension-build');
     wrap.classList.add('tension-build');
-    MUSIC.setTension(1, 1.45);
-  }, REEL_ACCEL_MS + REEL_DECEL_MS - REEL_TENSION_LEAD_MS);
+    MUSIC.setTension(1, packSec(1.45));
+  }, reelAccel + reelDecel - reelTensionLead);
 
   // After reel lands: play rarity reveal + show pack burst animation, then show picks
   setTimeout(() => {
     modal.classList.remove('tension-build');
     wrap.classList.remove('tension-build');
-    MUSIC.setTension(0, 0.55);
+    MUSIC.setTension(0, packSec(0.55));
     SFX.rarityReveal(winKey);
     showPackBurst(winKey, rarityMap, () => onLand(winKey));
-  }, REEL_ACCEL_MS + REEL_DECEL_MS + 250);
+  }, reelAccel + reelDecel + packMs(250));
 }
 
 function openPack(pack) {
