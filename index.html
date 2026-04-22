@@ -935,6 +935,18 @@
     }
     .screen-shake { animation: screenShake 0.45s ease-in-out; }
 
+    /* ═══════ INTRO ═══════ */
+    #intro { background: #000; align-items: center; justify-content: center; }
+    #intro-canvas { display: block; width: 100%; height: 100%; image-rendering: pixelated; }
+    #intro-skip {
+      position: absolute; bottom: 20px; right: 20px;
+      font-family: 'Press Start 2P', monospace; font-size: 9px;
+      color: #555; background: transparent;
+      border: 1px solid #333; padding: 7px 12px;
+      cursor: pointer; letter-spacing: 1px; z-index: 10;
+    }
+    #intro-skip:hover { color: #888; border-color: #555; }
+
     .modal-title {
       font-size: 14px; color: #ffd447;
       letter-spacing: 4px;
@@ -1683,8 +1695,14 @@
 </head>
 <body>
 
+<!-- ══════════════════════ INTRO ══════════════════════ -->
+<div id="intro" class="screen active">
+  <canvas id="intro-canvas"></canvas>
+  <button id="intro-skip">SKIP</button>
+</div>
+
 <!-- ══════════════════════ HOME ══════════════════════ -->
-<div id="home" class="screen active">
+<div id="home" class="screen">
 
   <div class="star" style="top:10%; left:15%;"></div>
   <div class="star" style="top:22%; left:78%;"></div>
@@ -2945,25 +2963,56 @@ const SFX = (() => {
 
 const MUSIC = (() => {
   const MUSIC_VOLUME = 0.34;
+  const TRACKS = [
+    './LP5SOUNDTRACK.mp3',
+    './LP5SOUNDTRACK2.mp3',
+    './LP5SOUNDTRACK3.mp3',
+    './LP5SOUNDTRACK4.mp3'
+  ];
   let _audio = null;
   let _unlockHandler = null;
+  let _trackIndex = -1;
   const unlockEvents = ['pointerdown', 'keydown', 'touchstart'];
+
+  function setTrack(index) {
+    _trackIndex = ((index % TRACKS.length) + TRACKS.length) % TRACKS.length;
+    const nextSrc = TRACKS[_trackIndex];
+    if (_audio.getAttribute('src') !== nextSrc) {
+      _audio.src = nextSrc;
+      _audio.load();
+    }
+  }
+
+  function chooseOpeningTrack() {
+    if (_trackIndex >= 0) return;
+    setTrack(Math.floor(Math.random() * TRACKS.length));
+  }
+
+  async function playNextTrack() {
+    setTrack(_trackIndex + 1);
+    try {
+      await _audio.play();
+      unbindUnlock();
+    } catch (err) {
+      console.warn('Soundtrack play was blocked.', err);
+      bindUnlock();
+    }
+  }
 
   function getAudio() {
     if (_audio) return _audio;
     _audio = document.createElement('audio');
-    _audio.src = './LP5SOUNDTRACK.mp3';
-    _audio.loop = true;
+    _audio.loop = false;
     _audio.preload = 'auto';
     _audio.playsInline = true;
     _audio.volume = MUSIC_VOLUME;
     _audio.style.display = 'none';
     _audio.setAttribute('aria-hidden', 'true');
+    _audio.addEventListener('ended', playNextTrack);
     _audio.addEventListener('error', () => {
       console.warn('Soundtrack failed to load.', _audio.error);
     });
     if (document.body) document.body.appendChild(_audio);
-    _audio.load();
     return _audio;
   }
 
@@ -2983,6 +3032,7 @@ const MUSIC = (() => {
 
   async function play() {
     const audio = getAudio();
+    chooseOpeningTrack();
     if (!audio.paused) {
       unbindUnlock();
       return;
@@ -3001,6 +3051,7 @@ const MUSIC = (() => {
     unbindUnlock();
     _audio.pause();
     _audio.currentTime = 0;
+    _trackIndex = -1;
     setTension(0, 0.01);
   }
 
@@ -3882,8 +3933,72 @@ function teamAttrs(p) {
   return p.equipped ? getEffectiveAttrs(p) : { ...p.attrs };
 }
 
+function playerOVR(p) {
+  return p.equipped ? getEffectiveOVR(p) : p.overall;
+}
+
 function getMatchup(defTeam, pos) {
   return defTeam.players.find(pl => pl.position === pos) || defTeam.players[0];
+}
+
+function defensiveStyle(defTeam) {
+  return (defTeam.playstyle && defTeam.playstyle.defensive) || 'Balanced';
+}
+
+function teamStar(team) {
+  return team.players
+    .slice()
+    .sort((a, b) => playerOVR(b) - playerOVR(a))[0];
+}
+
+function isStarTarget(offense, player) {
+  return offense && player && teamStar(offense) === player;
+}
+
+function defensiveStyleTurnoverChance(defTeam) {
+  const style = defensiveStyle(defTeam);
+  if (style === 'Trap') return 0.10;
+  if (style === 'Full Court Pressure') return 0.05;
+  return 0;
+}
+
+function defensiveStyleShotDelta(defTeam, offense, action, shooter) {
+  const style = defensiveStyle(defTeam);
+  if (style === 'Protect the Paint') {
+    return action === 'post' || action === 'drive' ? -0.10 : 0.10;
+  }
+  if (style === 'No Threes') {
+    return action === 'post' || action === 'drive' ? 0.10 : -0.10;
+  }
+  if (style === 'Trap') return 0.15;
+  if (style === 'Star Stopper') {
+    return isStarTarget(offense, shooter) ? -0.15 : 0.10;
+  }
+  if (style === 'Full Court Pressure') return 0.05;
+  return 0;
+}
+
+function applyShotDelta(made, delta) {
+  if (delta < 0) return made && Math.random() >= Math.abs(delta);
+  if (delta > 0) return made || Math.random() < delta;
+  return made;
+}
+
+function defensiveStyleNote(defTeam, offense, action, shooter, delta) {
+  const style = defensiveStyle(defTeam);
+  if (!delta) return '';
+  if (style === 'Protect the Paint') {
+    return action === 'post' || action === 'drive' ? 'PROTECT PAINT -10%' : 'PROTECT PAINT GIVES SPACE +10%';
+  }
+  if (style === 'No Threes') {
+    return action === 'post' || action === 'drive' ? 'NO THREES LANE +10%' : 'NO THREES CONTEST -10%';
+  }
+  if (style === 'Trap') return 'TRAP RISK +15%';
+  if (style === 'Star Stopper') {
+    return isStarTarget(offense, shooter) ? 'STAR STOPPER -15%' : 'STAR STOPPER HELP GAP +10%';
+  }
+  if (style === 'Full Court Pressure') return 'PRESSURE GAMBLE +5%';
+  return '';
 }
 
 function defensiveContestDEF(defTeam, defender) {
@@ -3923,34 +4038,46 @@ function possessionLength(playstyle) {
   return randi(14, 17);
 }
 
-function resolveShot(player, defender, offensePlaystyle, defenseTeam, ovmBoost) {
+function resolveShot(player, defender, offense, defenseTeam, ovmBoost, action = 'shoot') {
   const atk = teamAttrs(player);
   const def = defensiveContestDEF(defenseTeam, defender);
-  const threeChance = offensePlaystyle.offense === 'Let it Rain' ? 0.60 : 0.40;
+  const threeChance = offense.playstyle.offense === 'Let it Rain' ? 0.60 : 0.40;
   const isThree = Math.random() < threeChance;
+  const shotType = isThree ? '3PT' : '2PT';
   const OVM = randi(50, 100) * ovmBoost;
   const DVM = randi(50, 100);
   const mult = isThree ? 0.9 : 1;
-  const made = (OVM * mult) * atk.SHT > DVM * def;
-  return { made, points: made ? (isThree ? 3 : 2) : 0, shotType: isThree ? '3PT' : '2PT' };
+  const baseMade = (OVM * mult) * atk.SHT > DVM * def;
+  const delta = defensiveStyleShotDelta(defenseTeam, offense, action, player);
+  const made = applyShotDelta(baseMade, delta);
+  return {
+    made,
+    points: made ? (isThree ? 3 : 2) : 0,
+    shotType,
+    note: defensiveStyleNote(defenseTeam, offense, action, player, delta)
+  };
 }
 
-function resolvePost(player, defender, defenseTeam, ovmBoost) {
+function resolvePost(player, defender, offense, defenseTeam, ovmBoost) {
   const atk = teamAttrs(player);
   const def = defensiveContestDEF(defenseTeam, defender);
   const OVM = randi(50, 100) * ovmBoost;
   const DVM = randi(50, 100);
-  const made = OVM * ((atk.PST + atk.FIN) / 2) > DVM * def;
-  return { made, points: made ? 2 : 0, shotType: 'POST' };
+  const baseMade = OVM * ((atk.PST + atk.FIN) / 2) > DVM * def;
+  const delta = defensiveStyleShotDelta(defenseTeam, offense, 'post', player);
+  const made = applyShotDelta(baseMade, delta);
+  return { made, points: made ? 2 : 0, shotType: 'POST', note: defensiveStyleNote(defenseTeam, offense, 'post', player, delta) };
 }
 
-function resolveDrive(player, defender, defenseTeam, ovmBoost) {
+function resolveDrive(player, defender, offense, defenseTeam, ovmBoost) {
   const atk = teamAttrs(player);
   const def = defensiveContestDEF(defenseTeam, defender);
   const OVM = randi(50, 100) * ovmBoost;
   const DVM = randi(50, 100);
-  const made = OVM * atk.FIN > DVM * def;
-  return { made, points: made ? 2 : 0, shotType: 'DRIVE' };
+  const baseMade = OVM * atk.FIN > DVM * def;
+  const delta = defensiveStyleShotDelta(defenseTeam, offense, 'drive', player);
+  const made = applyShotDelta(baseMade, delta);
+  return { made, points: made ? 2 : 0, shotType: 'DRIVE', note: defensiveStyleNote(defenseTeam, offense, 'drive', player, delta) };
 }
 
 const REBOUND_POSITION_BIAS = { PG: 0.90, SG: 0.95, SF: 1.0, PF: 1.08, C: 1.16 };
@@ -4038,6 +4165,21 @@ function runPossession(offense, defense) {
   let ovmBoost = 1;
   let passer   = null;
   let shooter  = player;
+  const turnoverChance = defensiveStyleTurnoverChance(defense);
+
+  if (turnoverChance > 0 && Math.random() < turnoverChance) {
+    return {
+      secs,
+      shooter: player,
+      passer: null,
+      action: 'turnover',
+      made: false,
+      points: 0,
+      shotType: 'TO',
+      turnover: true,
+      note: defensiveStyle(defense) === 'Trap' ? 'TRAP FORCES TURNOVER' : 'FULL COURT PRESSURE FORCES TURNOVER'
+    };
+  }
 
   if (action === 'pass') {
     const teammates = offense.players.filter(p => p !== player);
@@ -4056,9 +4198,9 @@ function runPossession(offense, defense) {
 
   const matchup = getMatchup(defense, shooter.position);
   let result;
-  if (action === 'shoot')     result = resolveShot(shooter, matchup, offense.playstyle, defense, ovmBoost);
-  else if (action === 'post') result = resolvePost(shooter, matchup, defense, ovmBoost);
-  else                        result = resolveDrive(shooter, matchup, defense, ovmBoost);
+  if (action === 'shoot')     result = resolveShot(shooter, matchup, offense, defense, ovmBoost);
+  else if (action === 'post') result = resolvePost(shooter, matchup, offense, defense, ovmBoost);
+  else                        result = resolveDrive(shooter, matchup, offense, defense, ovmBoost);
 
   return { secs, shooter, passer, action, ...result };
 }
@@ -4126,41 +4268,47 @@ async function simulateGame(home, away) {
     const res = runPossession(offense, defense);
     const useSecs = Math.min(res.secs, clock);
     clock -= useSecs;
-
-    if (res.made) {
-      if (possession === 'home') {
-        homeScore += res.points;
-        addGameStat(gameStats, res.shooter, 'fga');
-        addGameStat(gameStats, res.shooter, 'fgm');
-        if (res.shotType === '3PT') {
-          addGameStat(gameStats, res.shooter, 'tpa');
-          addGameStat(gameStats, res.shooter, 'tpm');
-        }
-        addGameStat(gameStats, res.shooter, 'points', res.points);
-        if (res.passer) addGameStat(gameStats, res.passer, 'assists');
-      } else {
-        awayScore += res.points;
-      }
-    } else if (possession === 'home') {
-      addGameStat(gameStats, res.shooter, 'fga');
-      if (res.shotType === '3PT') addGameStat(gameStats, res.shooter, 'tpa');
-    } else if (possession === 'away') {
-      const rebounder = pickRebounder(home);
-      addGameStat(gameStats, rebounder, 'rebounds');
-      addLogEntry(`[${home.name.substring(0,6).toUpperCase()}] ${rebounder.name.toUpperCase()} REBOUND`, 'quarter');
-    }
-
-    const who = res.shooter.name.toUpperCase();
-    const actLabel = res.action === 'shoot' ? (res.shotType === '3PT' ? 'FOR 3' : 'FOR 2') :
-                     res.action === 'post'  ? 'POSTS UP' : 'DRIVES';
-    const passText = res.passer ? `${res.passer.name.toUpperCase()} PASSES → ` : '';
-    const outcome  = res.made ? `MADE (${res.points})` : 'MISS';
+    let nextPossession = possession === 'home' ? 'away' : 'home';
     const teamTag  = possession === 'home' ? `[${home.name.substring(0,6).toUpperCase()}]` : `[${away.name.substring(0,6).toUpperCase()}]`;
-    addLogEntry(`${teamTag} ${passText}${who} ${actLabel} — ${outcome}`, res.made ? 'made' : 'miss');
+
+    if (res.turnover) {
+      const who = res.shooter.name.toUpperCase();
+      addLogEntry(`${teamTag} ${who} TURNOVER${res.note ? ` - ${res.note}` : ''}`, 'miss');
+    } else {
+      if (res.made) {
+        if (possession === 'home') {
+          homeScore += res.points;
+          addGameStat(gameStats, res.shooter, 'fga');
+          addGameStat(gameStats, res.shooter, 'fgm');
+          if (res.shotType === '3PT') {
+            addGameStat(gameStats, res.shooter, 'tpa');
+            addGameStat(gameStats, res.shooter, 'tpm');
+          }
+          addGameStat(gameStats, res.shooter, 'points', res.points);
+          if (res.passer) addGameStat(gameStats, res.passer, 'assists');
+        } else {
+          awayScore += res.points;
+        }
+      } else if (possession === 'home') {
+        addGameStat(gameStats, res.shooter, 'fga');
+        if (res.shotType === '3PT') addGameStat(gameStats, res.shooter, 'tpa');
+      } else if (possession === 'away') {
+        const rebounder = pickRebounder(home);
+        addGameStat(gameStats, rebounder, 'rebounds');
+        addLogEntry(`[${home.name.substring(0,6).toUpperCase()}] ${rebounder.name.toUpperCase()} REBOUND`, 'quarter');
+      }
+
+      const who = res.shooter.name.toUpperCase();
+      const actLabel = res.action === 'shoot' ? (res.shotType === '3PT' ? 'FOR 3' : 'FOR 2') :
+                       res.action === 'post'  ? 'POSTS UP' : 'DRIVES';
+      const passText = res.passer ? `${res.passer.name.toUpperCase()} PASSES → ` : '';
+      const outcome  = res.made ? `MADE (${res.points})` : 'MISS';
+      addLogEntry(`${teamTag} ${passText}${who} ${actLabel} — ${outcome}${res.note ? ` - ${res.note}` : ''}`, res.made ? 'made' : 'miss');
+    }
 
     renderHUD(home, away, homeScore, awayScore, quarter, clock, useSecs);
 
-    possession = possession === 'home' ? 'away' : 'home';
+    possession = nextPossession;
 
     if (clock <= 0) {
       if (quarter < 4) {
@@ -4975,6 +5123,129 @@ document.addEventListener('click', (e) => {
     try { SFX.click(); } catch (err) {}
   }
 }, true);
+
+/* ═══════════════════════ INTRO – DASHAUN STUDIOS ═══════════════════════ */
+(function () {
+  const canvas = document.getElementById('intro-canvas');
+  const ctx    = canvas.getContext('2d');
+  let W, H;
+
+  function resize() {
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+    W = canvas.width;
+    H = canvas.height;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  let finished = false;
+  function finishIntro() {
+    if (finished) return;
+    finished = true;
+    const intro = document.getElementById('intro');
+    intro.style.transition = 'opacity 0.5s';
+    intro.style.opacity = '0';
+    setTimeout(() => {
+      intro.classList.remove('active');
+      intro.style.opacity = '';
+      intro.style.transition = '';
+      document.getElementById('home').classList.add('active');
+    }, 500);
+  }
+  document.getElementById('intro-skip').addEventListener('click', finishIntro);
+
+  // Start the game's music during the intro. If autoplay is blocked by the
+  // browser, MUSIC.play() internally binds an unlock handler so it will fire
+  // on the first user gesture (the SKIP click counts).
+  try { MUSIC.play(); } catch (e) {}
+
+  function drawStudioText(p) {
+    const line1 = 'DASHAUN';
+    const line2 = 'STUDIOS';
+    const total = line1.length + line2.length;
+    const chars = Math.floor(p * total);
+    const s1    = line1.substring(0, Math.min(line1.length, chars));
+    const s2    = chars > line1.length ? line2.substring(0, chars - line1.length) : '';
+    const fs    = Math.floor(Math.min(W, H) * 0.085);
+    ctx.font = `${fs}px 'Press Start 2P', monospace`;
+    ctx.textAlign = 'center';
+    const cy1 = H / 2 - fs * 0.7;
+    const cy2 = H / 2 + fs * 0.7;
+
+    for (let g = 18; g > 0; g -= 6) {
+      ctx.shadowColor = '#cc88ff';
+      ctx.shadowBlur  = g;
+      ctx.fillStyle   = '#fff';
+      ctx.fillText(s1, W / 2, cy1);
+      ctx.shadowColor = '#fff';
+      ctx.fillStyle   = '#cc88ff';
+      ctx.fillText(s2, W / 2, cy2);
+    }
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = '#fff';
+    ctx.fillText(s1, W / 2, cy1);
+    ctx.fillStyle = '#d9a8ff';
+    ctx.fillText(s2, W / 2, cy2);
+
+    if (chars < total && Math.floor(Date.now() / 220) % 2 === 0) {
+      const inL1 = chars < line1.length;
+      const cur  = inL1 ? s1 : s2;
+      const full = inL1 ? line1 : line2;
+      const cy   = inL1 ? cy1 : cy2;
+      const tw   = ctx.measureText(cur).width;
+      const fw   = ctx.measureText(full).width;
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(W / 2 - fw / 2 + tw + 6, cy - fs + 8, Math.max(3, fs * 0.09), fs * 0.7);
+    }
+  }
+
+  let t0 = null;
+  function frame(ts) {
+    if (!t0) t0 = ts;
+    const t = (ts - t0) / 1000;
+
+    // purple radial background
+    const grad = ctx.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, Math.max(W, H) * 0.8);
+    grad.addColorStop(0, '#7030d0');
+    grad.addColorStop(0.5, '#3d0a6e');
+    grad.addColorStop(1, '#0a0220');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, H);
+
+    // scanlines
+    ctx.fillStyle = 'rgba(0,0,0,0.12)';
+    for (let ly = 0; ly < H; ly += 4) ctx.fillRect(0, ly, W, 1);
+
+    // twinkling stars
+    for (let i = 0; i < 30; i++) {
+      const sx = (i * 73 + Math.floor(t * 30)) % W;
+      const sy = (i * 131) % H;
+      if (Math.floor(t * 3 + i) % 4 === 0) {
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(sx, sy, 2, 2);
+      }
+    }
+
+    // type-in over ~2s, hold ~1.5s, then fade
+    const typeT = Math.min(1, t / 2.0);
+    drawStudioText(typeT);
+
+    // fade out
+    if (t >= 4.0) {
+      const ft = Math.min(1, (t - 4.0) / 0.6);
+      ctx.fillStyle = '#000';
+      ctx.globalAlpha = ft;
+      ctx.fillRect(0, 0, W, H);
+      ctx.globalAlpha = 1;
+    }
+
+    if (t >= 4.8) { finishIntro(); return; }
+    requestAnimationFrame(frame);
+  }
+
+  requestAnimationFrame(frame);
+})();
 
 </script>
 

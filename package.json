@@ -1,0 +1,75 @@
+{
+  "name": "lets-play-fives",
+  "version": "0.1.0",
+  "description": "Desktop package for Lets Play Fives.",
+  "private": true,
+  "author": "Dashaun Barnes",
+  "license": "UNLICENSED",
+  "main": "electron-main.js",
+  "scripts": {
+    "start": "electron .",
+    "package:mac:universal": "electron-builder --mac dmg zip --universal --publish never",
+    "package:win:universal": "electron-builder --win nsis --x64 --ia32 --publish never",
+    "package:win:x64": "electron-builder --win nsis --x64 --publish never",
+    "package:dir": "electron-builder --dir --publish never"
+  },
+  "build": {
+    "appId": "com.letsplayfives.game",
+    "productName": "Lets Play Fives",
+    "asar": true,
+    "files": [
+      "index.html",
+      "electron-main.js",
+      "LP5SOUNDTRACK*.mp3",
+      "README.md"
+    ],
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "mac": {
+      "category": "public.app-category.games",
+      "icon": "build/icon.png",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "universal"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "universal"
+          ]
+        }
+      ],
+      "artifactName": "${productName}-${version}-mac-universal.${ext}"
+    },
+    "win": {
+      "icon": "build/icon.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "perMachine": false,
+      "shortcutName": "Lets Play Fives",
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "artifactName": "${productName}-${version}-win-universal-setup.${ext}"
+    }
+  },
+  "devDependencies": {
+    "electron": "^41.2.2",
+    "electron-builder": "^26.0.0"
+  }
+}

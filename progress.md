@@ -13,4 +13,7 @@ Original prompt: when a player pack is opened show the starting lineup at the to
 - Hardened soundtrack startup so the game uses a hidden audio element, waits for the Web Audio context to resume before `play()`, and falls back cleanly if the lowpass graph cannot be created.
 - Added a tense reel end-phase: the rarity wheel slowly zooms in, the surrounding modal blurs instead of the wheel itself, and the soundtrack lowpasses as the result approaches.
 - Removed the soundtrack lowpass/filter layer entirely after it interfered with playback; the wheel tension beat now keeps the zoom/blur visuals while music stays plain looping audio.
+- Changed background music into a four-song playlist using `LP5SOUNDTRACK.mp3` through `LP5SOUNDTRACK4.mp3`; each run start picks a random opening track, then advances through the songs in order and wraps around.
+- Rebalanced defensive style effects to only apply the requested direct rules: Protect Paint and No Threes use +/-10% shot result swings, Trap and Full Court Pressure add 10%/5% per-possession turnover chances with +15%/+5% shot swings, Star Stopper applies -15% to the opponent star and +10% to everyone else, and Balanced stays normal.
+- Added Electron packaging config for macOS universal and Windows NSIS universal builds, plus package icons under `build/icon.png` and `build/icon.ico`.
 - Did a code-level sanity check only; no browser automation was run because testing was not requested.
