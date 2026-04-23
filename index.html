@@ -83,6 +83,12 @@
       padding: 14px;
       gap: 12px;
       background: #0f1020;
+      overflow-y: auto;
+    }
+    #shop .topbar {
+      position: sticky;
+      top: -14px;
+      z-index: 10;
     }
 
     /* Top bar */
@@ -127,6 +133,29 @@
 
     /* Lineup */
     .lineup {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: center;
+      width: 100%;
+    }
+    .lineup-section {
+      width: 100%;
+    }
+    .lineup-section-label {
+      font-size: 8px;
+      letter-spacing: 3px;
+      color: #ffd447;
+      text-align: center;
+      padding: 4px 0 6px 0;
+      margin-bottom: 8px;
+      border-bottom: 2px solid #ffd447;
+    }
+    .lineup-section-label.bench-label {
+      color: #888;
+      border-color: #444;
+    }
+    .lineup-group {
       display: flex;
       gap: 10px;
       justify-content: center;
@@ -186,6 +215,87 @@
       letter-spacing: 1px;
       padding-top: 6px;
       border-top: 2px solid #000;
+    }
+    .player-rotation {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 8px;
+      padding: 6px 0 0 0;
+      border-top: 2px solid #000;
+      font-size: 6px;
+      letter-spacing: 1px;
+      color: #ffd447;
+    }
+    .player-rotation span:last-child {
+      color: #cfe0f0;
+    }
+    .player-minutes-wrap {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+    .player-minutes-btn {
+      font-family: inherit;
+      font-size: 8px;
+      line-height: 1;
+      width: 16px;
+      height: 16px;
+      background: #23384d;
+      color: #fff;
+      border: 1px solid #000;
+      cursor: pointer;
+      padding: 0;
+    }
+    .player-minutes-btn:hover { background: #324e6c; }
+    .player-minutes-input {
+      width: 28px;
+      background: #0f1020;
+      border: 1px solid #000;
+      color: #fff;
+      font-family: inherit;
+      font-size: 7px;
+      padding: 2px 0;
+      text-align: center;
+      -moz-appearance: textfield;
+    }
+    .player-minutes-input::-webkit-outer-spin-button,
+    .player-minutes-input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    .player-minutes-unit {
+      font-size: 6px;
+      color: #888;
+      letter-spacing: 1px;
+      margin-left: 2px;
+    }
+    .player-card.bench-card {
+      background: #1a2e3f;
+      border-color: #2a3f52;
+      opacity: 0.9;
+    }
+    .player-card.bench-card .player-head {
+      background: #12243a;
+    }
+    .player-swap-btn {
+      margin-top: 6px;
+      width: 100%;
+      background: #4caf50;
+      color: #fff;
+      border: 2px solid #000;
+      font-family: inherit;
+      font-size: 6px;
+      letter-spacing: 1px;
+      padding: 5px 0;
+      cursor: pointer;
+      box-shadow: 2px 2px 0 #000;
+      white-space: nowrap;
+    }
+    .player-swap-btn:hover { filter: brightness(1.15); }
+    .player-swap-btn.demote {
+      background: #444;
+      color: #aaa;
     }
     .player-stat-pop {
       position: absolute;
@@ -947,6 +1057,67 @@
     }
     #intro-skip:hover { color: #888; border-color: #555; }
 
+    /* ═══════ LOADING ═══════ */
+    #loading {
+      background: #0f1020;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 28px;
+      color: #fff;
+    }
+    .loading-ball {
+      width: 48px; height: 48px; border-radius: 50%;
+      background: radial-gradient(circle at 32% 30%, #ffb060 0%, #d17c2c 45%, #8b4a1a 100%);
+      box-shadow: inset -8px -8px 0 rgba(0,0,0,0.25), 4px 4px 0 #000;
+      position: relative;
+      animation: loading-bounce 0.7s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+    }
+    .loading-ball::before, .loading-ball::after {
+      content: ''; position: absolute; background: #1a0a04;
+    }
+    .loading-ball::before { left: 46%; top: 4%; width: 8%; height: 92%; }
+    .loading-ball::after  { top: 46%; left: 4%; width: 92%; height: 8%; border-radius: 50%; }
+    @keyframes loading-bounce {
+      0%, 100% { transform: translateY(0)   scaleX(1);   }
+      40%      { transform: translateY(-30px) scaleX(1); }
+      50%      { transform: translateY(-34px) scaleX(0.98); }
+      60%      { transform: translateY(-30px) scaleX(1); }
+      95%      { transform: translateY(2px)  scaleX(1.18) scaleY(0.82); }
+    }
+    .loading-text {
+      font-size: clamp(12px, 2vw, 16px);
+      color: #ffd447; letter-spacing: 4px;
+      text-shadow: 3px 3px 0 #000;
+    }
+    .loading-bar-wrap {
+      width: min(280px, 70vw);
+      height: 14px;
+      border: 3px solid #000;
+      background: #2a2a4e;
+      box-shadow: 4px 4px 0 #000;
+      overflow: hidden;
+    }
+    .loading-bar-fill {
+      height: 100%; width: 0%;
+      background: linear-gradient(90deg, #ffd447 0%, #ffae00 100%);
+      transition: width 0.12s linear;
+    }
+    .loading-status {
+      font-size: 8px;
+      color: #888;
+      letter-spacing: 2px;
+      min-height: 1em;
+    }
+    #loading-warm {
+      position: absolute;
+      left: -9999px; top: -9999px;
+      width: 1px; height: 1px;
+      overflow: hidden;
+      pointer-events: none;
+      opacity: 0;
+    }
+
     .modal-title {
       font-size: 14px; color: #ffd447;
       letter-spacing: 4px;
@@ -1163,6 +1334,12 @@
       line-height: 1.5;
       word-break: break-word;
     }
+    .pack-lineup-meta {
+      font-size: 6px;
+      color: #b8c9da;
+      letter-spacing: 1px;
+      line-height: 1.5;
+    }
 
     .pick-card {
       background: #2a4e6c;
@@ -1280,6 +1457,121 @@
       transform: translate(3px, 3px);
       box-shadow: 0 0 0 #000;
     }
+
+    /* Minutes modal */
+    .minutes-body {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: min(560px, 92vw);
+    }
+    .minutes-total-note {
+      font-size: 7px;
+      color: #888;
+      letter-spacing: 2px;
+      text-align: center;
+    }
+    .minutes-row {
+      background: #0f1020;
+      border: 3px solid #000;
+      padding: 12px;
+      box-shadow: 3px 3px 0 #000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .minutes-row-label {
+      font-size: 10px;
+      color: #ffd447;
+      letter-spacing: 3px;
+      text-align: center;
+    }
+    .minutes-row-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .minutes-slot {
+      background: #1a2e3f;
+      border: 2px solid #000;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: center;
+    }
+    .minutes-slot.starter {
+      background: #2a4e6c;
+    }
+    .minutes-slot-role {
+      font-size: 7px;
+      letter-spacing: 2px;
+      color: #ffd447;
+    }
+    .minutes-slot.starter .minutes-slot-role { color: #ffd447; }
+    .minutes-slot-name {
+      font-size: 8px;
+      color: #fff;
+      letter-spacing: 1px;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+    .minutes-slot-ovr {
+      font-size: 6px;
+      color: #cfe0f0;
+      letter-spacing: 1px;
+    }
+    .minutes-slot-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .minutes-slot-btn {
+      font-family: inherit;
+      font-size: 10px;
+      width: 24px;
+      height: 24px;
+      background: #23384d;
+      color: #fff;
+      border: 2px solid #000;
+      cursor: pointer;
+      box-shadow: 2px 2px 0 #000;
+      padding: 0;
+    }
+    .minutes-slot-btn:hover { background: #324e6c; }
+    .minutes-slot-input {
+      width: 50px;
+      background: #0f1020;
+      border: 2px solid #000;
+      color: #fff;
+      font-family: inherit;
+      font-size: 12px;
+      padding: 6px 4px;
+      text-align: center;
+      -moz-appearance: textfield;
+    }
+    .minutes-slot-input::-webkit-outer-spin-button,
+    .minutes-slot-input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    .minutes-slot-unit {
+      font-size: 7px;
+      color: #888;
+      letter-spacing: 2px;
+    }
+    .minutes-bar {
+      display: flex;
+      height: 10px;
+      border: 2px solid #000;
+      background: #000;
+      overflow: hidden;
+    }
+    .minutes-bar-starter { background: #ffd447; }
+    .minutes-bar-bench { background: #4a6578; }
     .pack-speed-control {
       display: grid;
       grid-template-columns: 1fr auto;
@@ -1348,6 +1640,82 @@
       width: 100%;
     }
     .detail-attrs span { display: flex; justify-content: space-between; }
+    .detail-rotation {
+      width: 100%;
+      background: #0f1020;
+      border: 2px solid #000;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .detail-rotation-label {
+      font-size: 8px;
+      color: #ffd447;
+      letter-spacing: 2px;
+      text-align: center;
+    }
+    .detail-rotation-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .detail-role-chip {
+      background: #23384d;
+      border: 2px solid #000;
+      color: #fff;
+      padding: 6px 8px;
+      font-size: 7px;
+      letter-spacing: 1px;
+      white-space: nowrap;
+    }
+    .detail-role-chip.active {
+      background: #ffd447;
+      color: #000;
+    }
+    .detail-role-btn {
+      font-family: inherit;
+      font-size: 7px;
+      background: #4caf50;
+      color: #fff;
+      border: 2px solid #000;
+      padding: 8px 10px;
+      letter-spacing: 1px;
+      cursor: pointer;
+      box-shadow: 2px 2px 0 #000;
+    }
+    .detail-role-btn:disabled {
+      background: #555;
+      color: #999;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    .detail-minutes-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 8px;
+      color: #cfe0f0;
+      letter-spacing: 1px;
+    }
+    .detail-minutes-input {
+      width: 100%;
+      background: #23384d;
+      border: 2px solid #000;
+      color: #fff;
+      font-family: inherit;
+      font-size: 11px;
+      padding: 8px;
+      text-align: center;
+    }
+    .detail-rotation-note {
+      font-size: 7px;
+      color: #888;
+      letter-spacing: 1px;
+      line-height: 1.5;
+      text-align: center;
+    }
 
     .detail-gear {
       display: grid;
@@ -1712,10 +2080,25 @@
       text-align: center;
       margin-top: -6px;
     }
+    .swap-targets {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+      width: min(760px, 88vw);
+    }
 
   </style>
 </head>
 <body>
+
+<!-- ══════════════════════ LOADING ══════════════════════ -->
+<div id="loading" class="screen">
+  <div class="loading-ball"></div>
+  <div class="loading-text">LOADING</div>
+  <div class="loading-bar-wrap"><div id="loading-bar-fill" class="loading-bar-fill"></div></div>
+  <div id="loading-status" class="loading-status">0%</div>
+  <div id="loading-warm" aria-hidden="true"></div>
+</div>
 
 <!-- ══════════════════════ INTRO ══════════════════════ -->
 <div id="intro" class="screen active">
@@ -1845,7 +2228,10 @@
   </div>
 
   <!-- lineup -->
-  <div class="section-label">— YOUR LINEUP — OVR <span id="team-ovr">250</span> —</div>
+  <div style="display:flex;align-items:center;justify-content:center;gap:14px;">
+    <div class="section-label">— YOUR LINEUP — OVR <span id="team-ovr">250</span> —</div>
+    <button id="bench-toggle-btn" class="btn-sm" style="background:#444;font-size:7px;padding:6px 10px;">HIDE BENCH</button>
+  </div>
   <div id="lineup" class="lineup"></div>
 
   <!-- shop -->
@@ -1879,7 +2265,7 @@
   <div class="modal-inner">
     <div class="modal-title" id="pack-phase-title">OPENING PACK...</div>
     <div id="pack-lineup" class="pack-lineup hidden">
-      <div class="pack-lineup-title">CURRENT STARTERS</div>
+      <div class="pack-lineup-title">CURRENT ROTATION</div>
       <div id="pack-lineup-row" class="pack-lineup-row"></div>
     </div>
 
@@ -1989,6 +2375,15 @@
   </div>
 </div>
 
+<!-- ══════════════════════ MINUTES MODAL ══════════════════════ -->
+<div id="minutes-modal" class="modal hidden">
+  <div class="modal-inner">
+    <button class="modal-close" id="minutes-close">X</button>
+    <div class="modal-title">ROTATION MINUTES</div>
+    <div id="minutes-body" class="minutes-body"></div>
+  </div>
+</div>
+
 <!-- ══════════════════════ PLAYER DETAIL MODAL ══════════════════════ -->
 <div id="detail-modal" class="modal hidden">
   <div class="modal-inner">
@@ -2017,8 +2412,9 @@
       <button class="inv-tab" id="tab-items" data-tab="items">ITEMS (0)</button>
     </div>
     <div id="inv-grid" class="inv-grid"></div>
-    <div class="inv-hint" id="inv-hint">SELECT A PLAYER TO SWAP INTO THEIR POSITION</div>
-    <button id="start-btn" class="start-btn" disabled>START</button>
+    <div class="inv-hint" id="inv-hint">SELECT A PLAYER TO SEE MATCHING ROTATION SLOTS</div>
+    <div id="swap-targets" class="swap-targets"></div>
+    <button id="start-btn" class="start-btn" disabled>SWAP INTO LINEUP</button>
   </div>
 </div>
 
@@ -2068,7 +2464,7 @@ const ECONOMY_TYPES = [
   { name: 'Interest',   effects: ['+$10K TICKET REV EACH GAME (COMPOUNDS)', '+$20K TICKET REV EACH GAME (COMPOUNDS)', '+$30K TICKET REV EACH GAME (COMPOUNDS)'] },
   { name: 'Incentives', effects: ['+$150K WIN BONUS',                    '+$250K WIN BONUS',                    '+$500K WIN BONUS']                   },
   { name: 'Dimes',      effects: ['+$300 TICKET REV PER ASSIST',         '+$650 TICKET REV PER ASSIST',         '+$1K TICKET REV PER ASSIST']         },
-  { name: 'Tanking',    effects: ['PLAYER PACK I EVERY 3 LOSSES',        'PLAYER PACK I EVERY 2 LOSSES',        'PLAYER PACK I EVERY LOSS']          },
+  { name: 'Tanking',    effects: ['+1 PLAYER PACK I EVERY 3 LOSSES',     '+1 PLAYER PACK I EVERY 2 LOSSES',     '+1 PLAYER PACK I EVERY LOSS']       },
   { name: 'Streak',     effects: ['+$100K PER WIN AFTER 3 STRAIGHT',     '+$200K PER WIN AFTER 3 STRAIGHT',     '+$300K PER WIN AFTER 3 STRAIGHT']    },
   { name: 'Showtime',   effects: ['+$250 PER POINT SCORED OVER 100',     '+$500 PER POINT SCORED OVER 100',     '+$1K PER POINT SCORED OVER 100']     },
   { name: 'Lockdown',   effects: ['+$250 PER OPP POINT BELOW 100',       '+$500 PER OPP POINT BELOW 100',       '+$1K PER OPP POINT BELOW 100']       },
@@ -2154,6 +2550,15 @@ const ATTR_KEYS   = ['IQ','SHT','DEF','PST','FIN','PSS'];
 const ATTR_LABELS = { IQ:'IQ', SHT:'SHT', DEF:'DEF', PST:'PST', FIN:'FIN', PSS:'PSS' };
 
 const POSITIONS = ['PG','SG','SF','PF','C'];
+const TOTAL_GAME_MINUTES = 48;
+const TOTAL_LINEUP_MINUTES = TOTAL_GAME_MINUTES * POSITIONS.length;
+const STARTER_MINUTES = 28;
+const BENCH_MINUTES = TOTAL_GAME_MINUTES - STARTER_MINUTES;
+const ROTATION_ROLE_ORDER = { starter: 0, bench: 1 };
+const ROTATION_TEMPLATES = [
+  ...POSITIONS.map(position => ({ position, rotationRole: 'starter', targetMinutes: STARTER_MINUTES })),
+  ...POSITIONS.map(position => ({ position, rotationRole: 'bench', targetMinutes: BENCH_MINUTES }))
+];
 
 const RARITIES = {
   normal:          { label: 'NORMAL',          min: 50, max: 70, color: '#b8b8b8', bg: '#6a6a6a' },
@@ -2348,6 +2753,72 @@ function generatePackPlayer(rarityKey) {
     equipped: {},
     stats: freshPlayerStats()
   };
+}
+
+function rotationSlotMeta(player) {
+  return {
+    position: player.position,
+    rotationRole: player.rotationRole || 'bench',
+    targetMinutes: Number.isFinite(player.targetMinutes) ? player.targetMinutes : BENCH_MINUTES
+  };
+}
+
+function applyRotationSlot(player, slot) {
+  player.position = slot.position;
+  player.rotationRole = slot.rotationRole;
+  player.targetMinutes = slot.targetMinutes;
+  return player;
+}
+
+function clearRotationMeta(player) {
+  delete player.rotationRole;
+  delete player.targetMinutes;
+  delete player.gameEnergy;
+  delete player.gameMinutes;
+  delete player.gamePossessionsLed;
+  return player;
+}
+
+function sortLineupPlayers(players) {
+  return players.slice().sort((a, b) =>
+    (ROTATION_ROLE_ORDER[a.rotationRole || 'bench'] - ROTATION_ROLE_ORDER[b.rotationRole || 'bench']) ||
+    (POSITIONS.indexOf(a.position) - POSITIONS.indexOf(b.position)) ||
+    b.overall - a.overall ||
+    a.name.localeCompare(b.name)
+  );
+}
+
+function buildDefaultLineup(overall) {
+  return sortLineupPlayers(
+    ROTATION_TEMPLATES.map(slot => applyRotationSlot(generatePlayer(overall, slot.position), slot))
+  );
+}
+
+function getRotationPartner(player, roster = state.lineup) {
+  return roster.find(other => other !== player && other.position === player.position) || null;
+}
+
+function setPlayerRotationMinutes(player, minutes, roster = state.lineup) {
+  const partner = getRotationPartner(player, roster);
+  const clamped = clampNum(Math.round(Number(minutes) || 0), 0, TOTAL_GAME_MINUTES);
+  player.targetMinutes = clamped;
+  if (partner) partner.targetMinutes = TOTAL_GAME_MINUTES - clamped;
+}
+
+function swapPlayerRotationSlots(playerA, playerB) {
+  const slotA = rotationSlotMeta(playerA);
+  const slotB = rotationSlotMeta(playerB);
+  applyRotationSlot(playerA, slotB);
+  applyRotationSlot(playerB, slotA);
+}
+
+function weightedTeamOverall(players, getOverall) {
+  const totalMinutes = players.reduce((sum, player) =>
+    sum + (Number.isFinite(player.targetMinutes) ? player.targetMinutes : 1)
+  , 0) || 1;
+  return Math.round(players.reduce((sum, player) =>
+    sum + getOverall(player) * (Number.isFinite(player.targetMinutes) ? player.targetMinutes : 1)
+  , 0) / totalMinutes);
 }
 
 function freshPlayerStats() {
@@ -2633,25 +3104,128 @@ const ECONOMY_ART = {
   `)
 };
 
-[
-  ['Dimes', '#6dff8a'],
-  ['Tanking', '#8b5a2b'],
-  ['Streak', '#ffd447'],
-  ['Showtime', '#e94560'],
-  ['Lockdown', '#4a86c5'],
-  ['Robber', '#c9beff'],
-  ['Splash', '#6ecbff']
-].forEach(([name, color]) => {
-  ECONOMY_ART[name] = svgWrap(`
-    <rect x="2" y="11" width="12" height="2" fill="#000"/>
-    <rect x="3" y="4" width="10" height="7" fill="${color}"/>
-    <rect x="3" y="4" width="10" height="1" fill="#fff"/>
-    <rect x="4" y="6" width="8" height="1" fill="#000"/>
-    <rect x="5" y="8" width="6" height="1" fill="#000"/>
-    <rect x="7" y="2" width="2" height="2" fill="${color}"/>
-    <rect x="6" y="13" width="4" height="1" fill="${color}"/>
-  `);
-});
+// Dimes — shiny silver dime coin with "10"
+ECONOMY_ART['Dimes'] = svgWrap(`
+  <rect x="4" y="2" width="8" height="1" fill="#a8a8a8"/>
+  <rect x="3" y="3" width="10" height="10" fill="#c0c0c0"/>
+  <rect x="4" y="13" width="8" height="1" fill="#a8a8a8"/>
+  <rect x="3" y="3" width="10" height="1" fill="#e8e8e8"/>
+  <rect x="4" y="2" width="4" height="1" fill="#e8e8e8"/>
+  <rect x="3" y="12" width="10" height="1" fill="#888"/>
+  <rect x="6" y="13" width="6" height="1" fill="#888"/>
+  <rect x="5" y="6" width="1" height="4" fill="#1a1a2e"/>
+  <rect x="4" y="7" width="1" height="1" fill="#1a1a2e"/>
+  <rect x="4" y="10" width="3" height="1" fill="#1a1a2e"/>
+  <rect x="8" y="6" width="3" height="1" fill="#1a1a2e"/>
+  <rect x="8" y="10" width="3" height="1" fill="#1a1a2e"/>
+  <rect x="8" y="7" width="1" height="3" fill="#1a1a2e"/>
+  <rect x="10" y="7" width="1" height="3" fill="#1a1a2e"/>
+`);
+
+// Tanking — military tank (wordplay)
+ECONOMY_ART['Tanking'] = svgWrap(`
+  <rect x="10" y="5" width="4" height="1" fill="#3a2414"/>
+  <rect x="6" y="4" width="4" height="2" fill="#5a3a1a"/>
+  <rect x="7" y="3" width="2" height="1" fill="#5a3a1a"/>
+  <rect x="2" y="6" width="12" height="5" fill="#8b5a2b"/>
+  <rect x="2" y="6" width="12" height="1" fill="#c9a374"/>
+  <rect x="2" y="10" width="12" height="1" fill="#5a3a1a"/>
+  <rect x="1" y="11" width="14" height="3" fill="#1a1a1a"/>
+  <rect x="1" y="11" width="14" height="1" fill="#444"/>
+  <rect x="2" y="13" width="2" height="1" fill="#555"/>
+  <rect x="5" y="13" width="2" height="1" fill="#555"/>
+  <rect x="8" y="13" width="2" height="1" fill="#555"/>
+  <rect x="11" y="13" width="2" height="1" fill="#555"/>
+  <rect x="7" y="7" width="2" height="1" fill="#3a2414"/>
+`);
+
+// Streak — blazing flame
+ECONOMY_ART['Streak'] = svgWrap(`
+  <rect x="7" y="2" width="2" height="1" fill="#ffd447"/>
+  <rect x="6" y="3" width="4" height="1" fill="#ffae00"/>
+  <rect x="5" y="4" width="6" height="1" fill="#ff8c00"/>
+  <rect x="4" y="5" width="8" height="2" fill="#ff8c00"/>
+  <rect x="3" y="7" width="10" height="2" fill="#e94560"/>
+  <rect x="2" y="9" width="12" height="3" fill="#cc1010"/>
+  <rect x="3" y="12" width="10" height="2" fill="#8b0a0a"/>
+  <rect x="7" y="4" width="2" height="1" fill="#fff8c4"/>
+  <rect x="6" y="5" width="4" height="2" fill="#ffd447"/>
+  <rect x="6" y="7" width="4" height="2" fill="#ff8c00"/>
+  <rect x="6" y="9" width="4" height="2" fill="#e94560"/>
+  <rect x="4" y="14" width="8" height="1" fill="#1a1a1a"/>
+`);
+
+// Showtime — spotlight with beam and star
+ECONOMY_ART['Showtime'] = svgWrap(`
+  <rect x="6" y="2" width="4" height="2" fill="#444"/>
+  <rect x="6" y="2" width="4" height="1" fill="#888"/>
+  <rect x="7" y="4" width="2" height="1" fill="#222"/>
+  <rect x="7" y="5" width="2" height="1" fill="#ffd447"/>
+  <rect x="6" y="6" width="4" height="1" fill="#fff8c4"/>
+  <rect x="5" y="7" width="6" height="1" fill="#fff8c4"/>
+  <rect x="4" y="8" width="8" height="1" fill="#ffd447"/>
+  <rect x="3" y="9" width="10" height="1" fill="#ffd447"/>
+  <rect x="2" y="10" width="12" height="1" fill="#b38600"/>
+  <rect x="1" y="11" width="14" height="1" fill="#1a1a1a"/>
+  <rect x="7" y="12" width="2" height="1" fill="#e94560"/>
+  <rect x="5" y="13" width="6" height="1" fill="#e94560"/>
+  <rect x="3" y="14" width="10" height="1" fill="#e94560"/>
+  <rect x="5" y="15" width="2" height="1" fill="#e94560"/>
+  <rect x="9" y="15" width="2" height="1" fill="#e94560"/>
+`);
+
+// Lockdown — padlock
+ECONOMY_ART['Lockdown'] = svgWrap(`
+  <rect x="5" y="2" width="6" height="1" fill="#c0c0c0"/>
+  <rect x="4" y="3" width="8" height="1" fill="#888"/>
+  <rect x="4" y="4" width="2" height="3" fill="#888"/>
+  <rect x="10" y="4" width="2" height="3" fill="#888"/>
+  <rect x="4" y="4" width="1" height="3" fill="#c0c0c0"/>
+  <rect x="3" y="7" width="10" height="7" fill="#4a86c5"/>
+  <rect x="3" y="7" width="10" height="1" fill="#7ab6f5"/>
+  <rect x="3" y="13" width="10" height="1" fill="#2a5690"/>
+  <rect x="2" y="8" width="1" height="5" fill="#4a86c5"/>
+  <rect x="13" y="8" width="1" height="5" fill="#4a86c5"/>
+  <rect x="7" y="9" width="2" height="2" fill="#000"/>
+  <rect x="7" y="11" width="2" height="2" fill="#000"/>
+`);
+
+// Robber — masked bandit in striped shirt
+ECONOMY_ART['Robber'] = svgWrap(`
+  <rect x="4" y="2" width="8" height="2" fill="#1a1a1a"/>
+  <rect x="3" y="3" width="10" height="1" fill="#1a1a1a"/>
+  <rect x="4" y="4" width="8" height="1" fill="#f0c596"/>
+  <rect x="3" y="5" width="10" height="2" fill="#1a1a1a"/>
+  <rect x="5" y="6" width="2" height="1" fill="#fff"/>
+  <rect x="9" y="6" width="2" height="1" fill="#fff"/>
+  <rect x="5" y="6" width="1" height="1" fill="#000"/>
+  <rect x="10" y="6" width="1" height="1" fill="#000"/>
+  <rect x="4" y="7" width="8" height="3" fill="#f0c596"/>
+  <rect x="6" y="9" width="4" height="1" fill="#8b0a0a"/>
+  <rect x="3" y="10" width="10" height="4" fill="#c9beff"/>
+  <rect x="3" y="11" width="10" height="1" fill="#1a1a1a"/>
+  <rect x="3" y="13" width="10" height="1" fill="#1a1a1a"/>
+  <rect x="4" y="14" width="8" height="2" fill="#1a1a1a"/>
+`);
+
+// Splash — water splash crown
+ECONOMY_ART['Splash'] = svgWrap(`
+  <rect x="3" y="2" width="1" height="2" fill="#a0dcff"/>
+  <rect x="12" y="2" width="1" height="2" fill="#a0dcff"/>
+  <rect x="7" y="3" width="2" height="1" fill="#a0dcff"/>
+  <rect x="2" y="5" width="1" height="1" fill="#6ecbff"/>
+  <rect x="5" y="4" width="1" height="2" fill="#6ecbff"/>
+  <rect x="7" y="5" width="2" height="1" fill="#6ecbff"/>
+  <rect x="10" y="4" width="1" height="2" fill="#6ecbff"/>
+  <rect x="13" y="5" width="1" height="1" fill="#6ecbff"/>
+  <rect x="2" y="6" width="12" height="2" fill="#6ecbff"/>
+  <rect x="2" y="6" width="12" height="1" fill="#a0dcff"/>
+  <rect x="1" y="8" width="14" height="3" fill="#4aaee5"/>
+  <rect x="1" y="11" width="14" height="3" fill="#2a8ec5"/>
+  <rect x="3" y="11" width="2" height="1" fill="#6ecbff"/>
+  <rect x="9" y="11" width="3" height="1" fill="#6ecbff"/>
+  <rect x="2" y="14" width="12" height="1" fill="#1a5a8e"/>
+`);
 
 const GEAR_ART = {
   'Headband': svgWrap(`
@@ -2819,21 +3393,25 @@ const DIFFICULTY_CURVES = {
 };
 
 /* ═══════════════ OPPOSING TEAMS ═══════════════ */
+function generateRotationRoster(buildPlayer) {
+  return sortLineupPlayers(ROTATION_TEMPLATES.map(slot => applyRotationSlot(buildPlayer(slot), slot)));
+}
+
 function generateOpposingTeam(weekNum) {
   const curve = DIFFICULTY_CURVES[state.difficulty] || DIFFICULTY_CURVES.normal;
   const growth = curve.weeklyGrowth * (weekNum - 1);
   const min = Math.round(45 + growth);
   const max = Math.round(55 + growth);
-  const players = POSITIONS.map(pos => {
+  const players = generateRotationRoster(slot => {
     const attrs = {};
     ATTR_KEYS.forEach(k => { attrs[k] = Math.min(99, randi(min, max)); });
     const ovr = Math.round(Object.values(attrs).reduce((a,b) => a+b, 0) / 6);
     return {
       name: rand(FIRST_NAMES) + ' ' + rand(LAST_NAMES),
-      position: pos, overall: ovr, attrs
+      position: slot.position, overall: ovr, attrs
     };
   });
-  const overall = Math.round(players.reduce((a,p) => a+p.overall, 0) / 5);
+  const overall = weightedTeamOverall(players, player => player.overall);
   const [c1, c2] = rand(TEAM_PALETTES);
   return {
     city: rand(CITIES),
@@ -3566,7 +4144,7 @@ const state = {
   ticketRevenue: BASE_TICKET_REVENUE,
   week: 1,
   difficulty: 'normal',
-  lineup: POSITIONS.map(pos => generatePlayer(50, pos)),
+  lineup: buildDefaultLineup(50),
   rerollCost: 500_000,
   inventory: [],
   items: [],
@@ -3574,6 +4152,7 @@ const state = {
   shopItems: [],
   schedule: [],
   selectedInvIdx: null,
+  selectedSwapTargetIdx: null,
   selectedInvTab: 'players',
   playstyle: {
     defense:    'Man',
@@ -3652,12 +4231,6 @@ function sumEcon(subtype) {
   , 0);
 }
 
-function bestEconTier(subtype) {
-  return state.items.reduce((best, it) =>
-    (it.kind === 'economy' && it.subtype === subtype) ? Math.max(best, it.tier) : best
-  , -1);
-}
-
 function homeGameSummary(result) {
   return result && result.boxScore && result.boxScore.summary && result.boxScore.summary[0];
 }
@@ -3693,14 +4266,14 @@ function queueEarnedPlayerPackI(reason) {
 
 function handleTankingReward(result) {
   if (result.win) return;
-  const tankingTier = bestEconTier('Tanking');
-  if (tankingTier < 0) return;
-  const threshold = [3, 2, 1][tankingTier];
   state.tankingLosses++;
-  if (state.tankingLosses >= threshold) {
-    state.tankingLosses -= threshold;
-    queueEarnedPlayerPackI(`TANKING ${TIER_ROMAN[tankingTier]}`);
-  }
+  const tankingCards = state.items.filter(it => it.kind === 'economy' && it.subtype === 'Tanking');
+  tankingCards.forEach(card => {
+    const threshold = [3, 2, 1][card.tier];
+    if (state.tankingLosses % threshold === 0) {
+      queueEarnedPlayerPackI(`TANKING ${TIER_ROMAN[card.tier]}`);
+    }
+  });
 }
 
 function getBaseOVR(p) {
@@ -3709,6 +4282,18 @@ function getBaseOVR(p) {
 
 function playValue(play) {
   return Object.values(play.boosts || {}).reduce((a,b) => a + b, 0);
+}
+
+function swapInventoryPlayerIntoLineup(inventoryIdx, lineupIdx) {
+  const incoming = state.inventory[inventoryIdx];
+  const outgoing = state.lineup[lineupIdx];
+  if (!incoming || !outgoing || incoming.position !== outgoing.position) return false;
+  applyRotationSlot(incoming, rotationSlotMeta(outgoing));
+  clearRotationMeta(outgoing);
+  state.lineup[lineupIdx] = incoming;
+  state.inventory[inventoryIdx] = outgoing;
+  state.lineup = sortLineupPlayers(state.lineup);
+  return true;
 }
 
 function collectPlayerGear(player, gearPool) {
@@ -3720,26 +4305,45 @@ function collectPlayerGear(player, gearPool) {
 
 function autoEquipPlayers() {
   POSITIONS.forEach(pos => {
-    const lineupIdx = state.lineup.findIndex(p => p.position === pos);
-    if (lineupIdx === -1) return;
+    while (true) {
+      const lineupCandidates = state.lineup
+        .map((player, index) => ({ player, index }))
+        .filter(entry => entry.player.position === pos)
+        .sort((a, b) =>
+          getBaseOVR(a.player) - getBaseOVR(b.player) ||
+          ROTATION_ROLE_ORDER[b.player.rotationRole || 'bench'] - ROTATION_ROLE_ORDER[a.player.rotationRole || 'bench']
+        );
+      const inventoryCandidates = state.inventory
+        .map((player, index) => ({ player, index }))
+        .filter(entry => entry.player.position === pos)
+        .sort((a, b) =>
+          getBaseOVR(b.player) - getBaseOVR(a.player) ||
+          a.player.name.localeCompare(b.player.name)
+        );
 
-    let best = state.lineup[lineupIdx];
-    let bestInvIdx = -1;
-    state.inventory.forEach((p, i) => {
-      if (p.position !== pos) return;
-      if (getBaseOVR(p) > getBaseOVR(best)) {
-        best = p;
-        bestInvIdx = i;
+      const worstLineup = lineupCandidates[0];
+      const bestInventory = inventoryCandidates[0];
+      if (!worstLineup || !bestInventory || getBaseOVR(bestInventory.player) <= getBaseOVR(worstLineup.player)) {
+        break;
       }
-    });
-
-    if (bestInvIdx !== -1) {
-      const outgoing = state.lineup[lineupIdx];
-      state.lineup[lineupIdx] = best;
-      state.inventory[bestInvIdx] = outgoing;
+      if (!swapInventoryPlayerIntoLineup(bestInventory.index, worstLineup.index)) {
+        break;
+      }
     }
   });
+
+  POSITIONS.forEach(pos => {
+    const playersAtPos = state.lineup.filter(p => p.position === pos);
+    if (playersAtPos.length < 2) return;
+    const best = playersAtPos.reduce((a, b) => getBaseOVR(b) > getBaseOVR(a) ? b : a);
+    if (best.rotationRole !== 'starter') {
+      const currentStarter = playersAtPos.find(p => p !== best && p.rotationRole === 'starter');
+      if (currentStarter) swapPlayerRotationSlots(best, currentStarter);
+    }
+  });
+  state.lineup = sortLineupPlayers(state.lineup);
   state.selectedInvIdx = null;
+  state.selectedSwapTargetIdx = null;
 }
 
 function autoEquipGear() {
@@ -3804,10 +4408,16 @@ const AUTO_EQUIP_OPTIONS = [
 loadLocalSettings();
 
 /* ═══════════════ RENDER ═══════════════ */
-function playerCardHTML(p, extraClass = '', extraAttr = '') {
+function playerCardHTML(p, extraClass = '', extraAttr = '', swapBtnHTML = '', editableMinutes = false) {
   const avg = playerAverages(p);
   const eff = getEffectiveAttrs(p);
   const ovr = getEffectiveOVR(p);
+  const hasRotation = Number.isFinite(p.targetMinutes);
+  const rotationHTML = hasRotation ? `
+      <div class="player-rotation">
+        <span>${(p.rotationRole === 'starter' ? 'STARTER' : 'BENCH')}</span>
+      </div>
+  ` : '';
   const b = k => {
     const boosted = eff[k] !== p.attrs[k];
     return `<b${boosted ? ' style="color:#6dff8a"' : ''}>${eff[k]}</b>`;
@@ -3828,7 +4438,9 @@ function playerCardHTML(p, extraClass = '', extraAttr = '') {
         <span>FIN ${b('FIN')}</span>
         <span>PSS ${b('PSS')}</span>
       </div>
+      ${rotationHTML}
       <div class="player-value">${fmtMoney(yearlyValue(ovr))}</div>
+      ${swapBtnHTML}
       <div class="player-stat-pop">
         GAMES <b>${avg.games}</b><br>
         PPG <b>${avg.ppg}</b><br>
@@ -3842,16 +4454,57 @@ function playerCardHTML(p, extraClass = '', extraAttr = '') {
 }
 
 function renderLineup() {
+  state.lineup = sortLineupPlayers(state.lineup);
   const row = document.getElementById('lineup');
-  row.innerHTML = state.lineup.map((p, i) => playerCardHTML(p, 'lineup-clickable', `data-idx="${i}"`)).join('');
+
+  const makeCard = p => {
+    const idx = state.lineup.indexOf(p);
+    const partner = getRotationPartner(p);
+    const isStarter = p.rotationRole === 'starter';
+    const swapBtnHTML = partner
+      ? `<button class="player-swap-btn${isStarter ? ' demote' : ''}" data-idx="${idx}" data-partner-idx="${state.lineup.indexOf(partner)}">${isStarter ? '▼ MOVE TO BENCH' : '▲ MOVE TO STARTERS'}</button>`
+      : '';
+    return playerCardHTML(p, 'lineup-clickable' + (isStarter ? '' : ' bench-card'), `data-idx="${idx}"`, swapBtnHTML);
+  };
+
+  const starters = state.lineup.filter(p => p.rotationRole === 'starter');
+  const bench = state.lineup.filter(p => p.rotationRole !== 'starter');
+
+  row.innerHTML = `
+    <div class="lineup-section">
+      <div class="lineup-section-label">— STARTERS —</div>
+      <div class="lineup-group">${starters.map(makeCard).join('')}</div>
+    </div>
+    ${showBench ? `
+    <div class="lineup-section">
+      <div class="lineup-section-label bench-label">— BENCH —</div>
+      <div class="lineup-group">${bench.map(makeCard).join('')}</div>
+    </div>
+    ` : ''}
+  `;
+
   row.querySelectorAll('.player-card').forEach(card => {
-    card.addEventListener('click', () => openPlayerDetail(+card.dataset.idx));
+    card.addEventListener('click', e => {
+      if (e.target.closest('.player-swap-btn')) return;
+      openPlayerDetail(+card.dataset.idx);
+    });
   });
-  const teamOvr = Math.round(state.lineup.reduce((a, p) => a + getEffectiveOVR(p), 0) / 5);
+
+  row.querySelectorAll('.player-swap-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      swapPlayerRotationSlots(state.lineup[+btn.dataset.idx], state.lineup[+btn.dataset.partnerIdx]);
+      state.lineup = sortLineupPlayers(state.lineup);
+      renderLineup();
+    });
+  });
+
+  const teamOvr = weightedTeamOverall(state.lineup, getEffectiveOVR);
   document.getElementById('team-ovr').textContent = teamOvr;
 }
 
 function renderPackLineup(highlightPosition = '') {
+  state.lineup = sortLineupPlayers(state.lineup);
   const row = document.getElementById('pack-lineup-row');
   row.innerHTML = state.lineup.map(player => `
     <div class="pack-lineup-slot${player.position === highlightPosition ? ' active' : ''}">
@@ -3860,6 +4513,7 @@ function renderPackLineup(highlightPosition = '') {
         <span class="pack-lineup-ovr">OVR ${getEffectiveOVR(player)}</span>
       </div>
       <div class="pack-lineup-name">${player.name.toUpperCase()}</div>
+      <div class="pack-lineup-meta">${player.rotationRole === 'starter' ? 'START' : 'BENCH'} · ${Math.round(player.targetMinutes)} MIN</div>
     </div>
   `).join('');
 }
@@ -3945,6 +4599,7 @@ function renderShop() {
 }
 
 /* ═══════════════ EVENTS ═══════════════ */
+let showBench = true;
 let packQueue = [];
 let startingFlow = false;
 function runPackQueue() {
@@ -4012,7 +4667,7 @@ function renderSchedule() {
         </div>
         <div class="team-ovr">OVR ${t.overall}</div>
         <div class="roster-list">
-          ${t.players.map(p => `<span>${p.position} <b>${p.overall}</b></span>`).join('')}
+          ${t.players.map(p => `<span>${p.position} ${p.rotationRole === 'starter' ? 'ST' : 'BN'} <b>${p.overall}</b></span>`).join('')}
         </div>
         ${statusHTML}
         ${btnHTML}
@@ -4088,12 +4743,107 @@ document.getElementById('sched-back').addEventListener('click', () => {
 const QUARTER_SECS = 12 * 60;
 const OT_SECS      = 5 * 60;
 
+function clampNum(value, min, max) {
+  return Math.max(min, Math.min(max, value));
+}
+
+function clonePlayerForGame(player) {
+  return {
+    ...player,
+    attrs: { ...player.attrs },
+    equipped: { ...(player.equipped || {}) },
+    stats: player.stats ? { ...player.stats } : freshPlayerStats()
+  };
+}
+
+function rotationTargetMinutes(player) {
+  return Number.isFinite(player.targetMinutes) ? player.targetMinutes : TOTAL_GAME_MINUTES / 2;
+}
+
+function initializeGamePlayer(player) {
+  player.gameEnergy = 100;
+  player.gameMinutes = 0;
+  player.gamePossessionsLed = 0;
+}
+
+function clearGamePlayer(player) {
+  delete player.gameEnergy;
+  delete player.gameMinutes;
+  delete player.gamePossessionsLed;
+}
+
+function applyEnergyScale(attrs, energy = 100) {
+  const scale = clampNum(energy, 0, 100) / 100;
+  const scaled = {};
+  ATTR_KEYS.forEach(key => {
+    scaled[key] = attrs[key] * scale;
+  });
+  return scaled;
+}
+
 function teamAttrs(p) {
-  return p.equipped ? getEffectiveAttrs(p) : { ...p.attrs };
+  const attrs = p.equipped ? getEffectiveAttrs(p) : { ...p.attrs };
+  return applyEnergyScale(attrs, Number.isFinite(p.gameEnergy) ? p.gameEnergy : 100);
 }
 
 function playerOVR(p) {
+  if (Number.isFinite(p.gameEnergy)) {
+    const attrs = teamAttrs(p);
+    return Math.round(Object.values(attrs).reduce((sum, value) => sum + value, 0) / ATTR_KEYS.length);
+  }
   return p.equipped ? getEffectiveOVR(p) : p.overall;
+}
+
+function rotationSelectionScore(player) {
+  return rotationTargetMinutes(player) - (player.gameMinutes || 0);
+}
+
+function pickRotationPlayer(team, position) {
+  const options = team.roster.filter(player => player.position === position);
+  return options
+    .slice()
+    .sort((a, b) =>
+      rotationSelectionScore(b) - rotationSelectionScore(a) ||
+      ((rotationTargetMinutes(b) - rotationTargetMinutes(a))) ||
+      (ROTATION_ROLE_ORDER[a.rotationRole || 'bench'] - ROTATION_ROLE_ORDER[b.rotationRole || 'bench']) ||
+      ((Number.isFinite(b.gameEnergy) ? b.gameEnergy : 100) - (Number.isFinite(a.gameEnergy) ? a.gameEnergy : 100)) ||
+      playerOVR(b) - playerOVR(a)
+    )[0] || team.roster[0];
+}
+
+function syncTeamRotation(team) {
+  team.players = POSITIONS.map(position => pickRotationPlayer(team, position));
+  return team.players;
+}
+
+function buildGameTeam(team, keepPlayerRefs = false) {
+  const rosterSource = sortLineupPlayers(team.players || team.roster || []);
+  const roster = keepPlayerRefs ? rosterSource : rosterSource.map(clonePlayerForGame);
+  roster.forEach(initializeGamePlayer);
+  const gameTeam = {
+    ...team,
+    roster,
+    players: []
+  };
+  syncTeamRotation(gameTeam);
+  return gameTeam;
+}
+
+function applyCourtTime(players, secs) {
+  const minutes = secs / 60;
+  players.forEach(player => {
+    player.gameMinutes = (player.gameMinutes || 0) + minutes;
+    player.gameEnergy = clampNum((Number.isFinite(player.gameEnergy) ? player.gameEnergy : 100) - minutes, 0, 100);
+  });
+}
+
+function drainPossessionLeader(player) {
+  player.gamePossessionsLed = (player.gamePossessionsLed || 0) + 1;
+  player.gameEnergy = clampNum((Number.isFinite(player.gameEnergy) ? player.gameEnergy : 100) - 1, 0, 100);
+}
+
+function clearGameTeam(team) {
+  (team.roster || []).forEach(clearGamePlayer);
 }
 
 function getMatchup(defTeam, pos) {
@@ -4112,10 +4862,6 @@ function teamStar(team) {
 
 function isStarTarget(offense, player) {
   return offense && player && teamStar(offense) === player;
-}
-
-function clampNum(value, min, max) {
-  return Math.max(min, Math.min(max, value));
 }
 
 function defensiveStyleTurnoverChance(defTeam, ballHandler, defender) {
@@ -4184,7 +4930,7 @@ function pickActionPlayer(team) {
   if (team.playstyle.offense === 'Play Through Star') {
     let star = team.players[0], starOVR = -1;
     team.players.forEach(p => {
-      const o = p.equipped ? getEffectiveOVR(p) : p.overall;
+      const o = playerOVR(p);
       if (o > starOVR) { starOVR = o; star = p; }
     });
     if (Math.random() < 0.35) return star;
@@ -4386,9 +5132,12 @@ function renderBoxScore(boxScore = state.lastBoxScore) {
   `;
 }
 
-function runPossession(offense, defense) {
-  const secs   = possessionLength(offense.playstyle);
+function runPossession(offense, defense, availableSecs) {
+  const secs   = Math.min(possessionLength(offense.playstyle), availableSecs);
+  applyCourtTime(offense.players, secs);
+  applyCourtTime(defense.players, secs);
   const player = pickActionPlayer(offense);
+  drainPossessionLeader(player);
   let action   = pickAction(offense.playstyle);
   let ovmBoost = 1;
   let passer   = null;
@@ -4488,7 +5237,7 @@ async function simulateGame(home, away) {
   let possession = Math.random() < 0.5 ? 'home' : 'away';
   let quarter = 1;
   let clock = QUARTER_SECS;
-  const gameStats = makeGameStats(home.players);
+  const gameStats = makeGameStats(home.roster);
   const teamStats = {
     home: freshTeamGameStats(home.name),
     away: freshTeamGameStats(away.name)
@@ -4498,11 +5247,13 @@ async function simulateGame(home, away) {
   addLogEntry(`TIP-OFF — ${possession === 'home' ? home.name.toUpperCase() : away.name.toUpperCase()} BALL`, 'quarter');
 
   while (true) {
+    syncTeamRotation(home);
+    syncTeamRotation(away);
     // no global abort — skip only changes pacing
     const offense = possession === 'home' ? home : away;
     const defense = possession === 'home' ? away : home;
-    const res = runPossession(offense, defense);
-    const useSecs = Math.min(res.secs, clock);
+    const res = runPossession(offense, defense, clock);
+    const useSecs = res.secs;
     clock -= useSecs;
     let nextPossession = possession === 'home' ? 'away' : 'home';
     const teamTag  = possession === 'home' ? `[${home.name.substring(0,6).toUpperCase()}]` : `[${away.name.substring(0,6).toUpperCase()}]`;
@@ -4583,33 +5334,36 @@ async function simulateGame(home, away) {
   const win = homeScore > awayScore;
   addLogEntry(`FINAL — ${home.name.toUpperCase()} ${homeScore} / ${away.name.toUpperCase()} ${awayScore} — ${win ? 'WIN!' : 'LOSS'}`, 'quarter');
 
+  const boxScore = {
+    summary: boxScoreSummaryFromTeamStats(teamStats),
+    players: boxScoreFromGameStats(gameStats)
+  };
   commitGameStats(gameStats);
+  clearGameTeam(home);
+  clearGameTeam(away);
   return {
     win,
     homeScore,
     awayScore,
-    boxScore: {
-      summary: boxScoreSummaryFromTeamStats(teamStats),
-      players: boxScoreFromGameStats(gameStats)
-    }
+    boxScore
   };
 }
 
 function buildHomeTeam() {
-  return {
+  return buildGameTeam({
     name: 'STARTING FIVE',
     city: '',
     color1: '#ffd447', color2: '#1a3acc', shape: 'shield',
     players: state.lineup,
     playstyle: state.playstyle
-  };
+  }, true);
 }
 
 async function startGame(idx) {
   applyAutoEquip();
   renderLineup();
   state.currentGameIdx = idx;
-  const opponent = state.schedule[idx];
+  const opponent = buildGameTeam(state.schedule[idx]);
   const home = buildHomeTeam();
   document.getElementById('schedule').classList.remove('active');
   document.getElementById('game').classList.add('active');
@@ -4694,15 +5448,15 @@ document.getElementById('sim-continue').addEventListener('click', () => {
 
 /* ═══════════════ CHAMPIONSHIP ═══════════════ */
 function generateChampionshipTeam() {
-  const players = POSITIONS.map(pos => {
+  const players = generateRotationRoster(slot => {
     const attrs = {};
     ATTR_KEYS.forEach(k => { attrs[k] = 99; });
-    return { name: rand(FIRST_NAMES) + ' ' + rand(LAST_NAMES), position: pos, overall: 99, attrs };
+    return { name: rand(FIRST_NAMES) + ' ' + rand(LAST_NAMES), position: slot.position, overall: 99, attrs };
   });
   return {
     city: 'THE', name: 'FINALS',
     color1: '#ffd447', color2: '#e74c3c', shape: 'diamond',
-    players, overall: 99,
+    players, overall: weightedTeamOverall(players, player => player.overall),
     playstyle: { defense: 'Man', offense: 'Play Through Star', defensive: 'Trap' }
   };
 }
@@ -4711,7 +5465,7 @@ async function startChampionshipGame() {
   applyAutoEquip();
   renderLineup();
   state.isFinalMatch = true;
-  const opponent = generateChampionshipTeam();
+  const opponent = buildGameTeam(generateChampionshipTeam());
   const home = buildHomeTeam();
   document.getElementById('schedule').classList.remove('active');
   document.getElementById('game').classList.add('active');
@@ -4774,7 +5528,7 @@ function resetState() {
   state.ticketRevenue = BASE_TICKET_REVENUE;
   state.week = 1;
   state.difficulty = 'normal';
-  state.lineup = POSITIONS.map(pos => generatePlayer(50, pos));
+  state.lineup = buildDefaultLineup(50);
   state.rerollCost = 500_000;
   state.inventory = [];
   state.items = [];
@@ -4782,6 +5536,7 @@ function resetState() {
   state.shopItems = [];
   state.schedule = [];
   state.selectedInvIdx = null;
+  state.selectedSwapTargetIdx = null;
   state.selectedInvTab = 'players';
   state.playstyle = { defense: 'Man', offense: 'Go Fast', defensive: 'Balanced' };
   state.wins = 0;
@@ -4862,6 +5617,12 @@ function renderSettings() {
     WP%: ${wp}%
   `;
 }
+document.getElementById('bench-toggle-btn').addEventListener('click', () => {
+  showBench = !showBench;
+  document.getElementById('bench-toggle-btn').textContent = showBench ? 'HIDE BENCH' : 'SHOW BENCH';
+  renderLineup();
+});
+
 document.getElementById('settings-btn').addEventListener('click', () => {
   SFX.whoosh();
   renderSettings();
@@ -5140,6 +5901,7 @@ function sellPlayer(idx) {
   state.inventory.splice(idx, 1);
   if (state.selectedInvIdx === idx) state.selectedInvIdx = null;
   else if (state.selectedInvIdx > idx) state.selectedInvIdx--;
+  state.selectedSwapTargetIdx = null;
   applyAutoEquip();
   renderCash();
   renderInventory();
@@ -5170,22 +5932,31 @@ function updateInvButton() {
 }
 
 function renderInventory() {
+  state.lineup = sortLineupPlayers(state.lineup);
   const grid = document.getElementById('inv-grid');
   const startBtn = document.getElementById('start-btn');
   const hint = document.getElementById('inv-hint');
+  const swapTargets = document.getElementById('swap-targets');
 
   document.getElementById('tab-players').textContent = `PLAYERS (${state.inventory.length})`;
   document.getElementById('tab-items').textContent   = `ITEMS (${state.items.length})`;
   document.getElementById('tab-players').classList.toggle('active', state.selectedInvTab === 'players');
   document.getElementById('tab-items').classList.toggle('active',   state.selectedInvTab === 'items');
 
+  if (state.selectedInvIdx !== null && !state.inventory[state.selectedInvIdx]) state.selectedInvIdx = null;
+  const selectedPlayer = state.selectedInvIdx === null ? null : state.inventory[state.selectedInvIdx];
+
   if (state.selectedInvTab === 'players') {
     grid.className = 'inv-grid';
     hint.style.display = '';
     startBtn.style.display = '';
+    swapTargets.style.display = 'grid';
+    startBtn.textContent = 'SWAP INTO LINEUP';
 
     if (state.inventory.length === 0) {
       grid.innerHTML = `<div class="inv-empty">NO PLAYERS YET — OPEN A PACK!</div>`;
+      hint.textContent = 'SELECT A PLAYER TO SEE MATCHING ROTATION SLOTS';
+      swapTargets.innerHTML = '';
       startBtn.disabled = true;
       return;
     }
@@ -5200,6 +5971,7 @@ function renderInventory() {
       card.addEventListener('click', () => {
         const idx = +card.dataset.idx;
         state.selectedInvIdx = state.selectedInvIdx === idx ? null : idx;
+        state.selectedSwapTargetIdx = null;
         renderInventory();
       });
     });
@@ -5210,11 +5982,43 @@ function renderInventory() {
       });
     });
 
-    startBtn.disabled = state.selectedInvIdx === null;
+    if (!selectedPlayer) {
+      hint.textContent = 'SELECT A PLAYER TO SEE MATCHING ROTATION SLOTS';
+      swapTargets.innerHTML = '';
+      startBtn.disabled = true;
+      return;
+    }
+
+    const targets = state.lineup
+      .map((player, index) => ({ player, index }))
+      .filter(entry => entry.player.position === selectedPlayer.position);
+
+    if (!targets.some(entry => entry.index === state.selectedSwapTargetIdx)) {
+      state.selectedSwapTargetIdx = null;
+    }
+
+    swapTargets.innerHTML = targets.map(({ player, index }) =>
+      playerCardHTML(player, `inv-selectable ${index === state.selectedSwapTargetIdx ? 'selected' : ''}`, `data-target-idx="${index}"`)
+    ).join('');
+
+    swapTargets.querySelectorAll('.player-card').forEach(card => {
+      card.addEventListener('click', () => {
+        state.selectedSwapTargetIdx = +card.dataset.targetIdx;
+        renderInventory();
+      });
+    });
+
+    const targetPlayer = state.selectedSwapTargetIdx === null ? null : state.lineup[state.selectedSwapTargetIdx];
+    hint.textContent = targetPlayer
+      ? `SWAP ${selectedPlayer.name.toUpperCase()} FOR ${targetPlayer.name.toUpperCase()}`
+      : `SELECT WHICH ${selectedPlayer.position} SLOT TO REPLACE`;
+    startBtn.disabled = !targetPlayer;
   } else {
     grid.className = 'item-grid';
     hint.style.display = 'none';
     startBtn.style.display = 'none';
+    swapTargets.style.display = 'none';
+    swapTargets.innerHTML = '';
 
     if (state.items.length === 0) {
       grid.innerHTML = `<div class="inv-empty">NO ITEMS YET — BUY FROM THE SHOP!</div>`;
@@ -5261,28 +6065,27 @@ function renderInventory() {
 
 document.getElementById('inv-btn').addEventListener('click', () => {
   state.selectedInvIdx = null;
+  state.selectedSwapTargetIdx = null;
   renderInventory();
   document.getElementById('inv-modal').classList.remove('hidden');
 });
 document.getElementById('inv-close').addEventListener('click', () => {
+  state.selectedSwapTargetIdx = null;
   document.getElementById('inv-modal').classList.add('hidden');
 });
 document.querySelectorAll('.inv-tab').forEach(t => {
   t.addEventListener('click', () => {
     state.selectedInvTab = t.dataset.tab;
     state.selectedInvIdx = null;
+    state.selectedSwapTargetIdx = null;
     renderInventory();
   });
 });
 document.getElementById('start-btn').addEventListener('click', () => {
-  if (state.selectedInvIdx === null) return;
-  const incoming = state.inventory[state.selectedInvIdx];
-  const lineupIdx = state.lineup.findIndex(p => p.position === incoming.position);
-  if (lineupIdx === -1) return;
-  const outgoing = state.lineup[lineupIdx];
-  state.lineup[lineupIdx] = incoming;
-  state.inventory[state.selectedInvIdx] = outgoing;
+  if (state.selectedInvIdx === null || state.selectedSwapTargetIdx === null) return;
+  if (!swapInventoryPlayerIntoLineup(state.selectedInvIdx, state.selectedSwapTargetIdx)) return;
   state.selectedInvIdx = null;
+  state.selectedSwapTargetIdx = null;
   applyAutoEquip();
   renderLineup();
   renderInventory();
@@ -5290,19 +6093,25 @@ document.getElementById('start-btn').addEventListener('click', () => {
 
 /* ═══════════════ PLAYER DETAIL ═══════════════ */
 let detailPlayerIdx = null;
+let detailPlayerRef = null;
 
 function openPlayerDetail(idx) {
   detailPlayerIdx = idx;
+  detailPlayerRef = state.lineup[idx] || null;
   SFX.whoosh();
   renderPlayerDetail();
   document.getElementById('detail-modal').classList.remove('hidden');
 }
 
 function renderPlayerDetail() {
-  const p = state.lineup[detailPlayerIdx];
+  const p = detailPlayerRef || state.lineup[detailPlayerIdx];
+  if (!p) return;
+  detailPlayerIdx = state.lineup.indexOf(p);
+  detailPlayerRef = p;
   const eff = getEffectiveAttrs(p);
   const ovr = getEffectiveOVR(p);
   const body = document.getElementById('detail-body');
+  const partner = getRotationPartner(p);
 
   const attrLine = k => {
     const boosted = eff[k] !== p.attrs[k];
@@ -5328,6 +6137,27 @@ function renderPlayerDetail() {
       </div>`;
   }).join('');
 
+  const rotationHTML = Number.isFinite(p.targetMinutes) ? `
+    <div class="detail-rotation">
+      <div class="detail-rotation-label">ROTATION</div>
+      <div class="detail-rotation-row">
+        <div class="detail-role-chip ${p.rotationRole === 'starter' ? 'active' : ''}">
+          ${p.rotationRole === 'starter' ? 'STARTER' : 'BENCH'}
+        </div>
+        <button class="detail-role-btn" id="detail-promote-btn" ${p.rotationRole === 'starter' || !partner ? 'disabled' : ''}>
+          ${p.rotationRole === 'starter' ? 'STARTING SLOT' : 'MOVE TO STARTERS'}
+        </button>
+      </div>
+      <label class="detail-minutes-field">
+        TARGET MINUTES
+        <input id="detail-minutes" class="detail-minutes-input" type="number" min="0" max="${TOTAL_GAME_MINUTES}" step="1" value="${Math.round(p.targetMinutes)}">
+      </label>
+      <div class="detail-rotation-note">
+        ${partner ? `${partner.name.toUpperCase()} AUTO-ADJUSTS TO ${Math.round(partner.targetMinutes)} MIN SO ${p.position} STAYS AT ${TOTAL_GAME_MINUTES} MIN.` : `NO ROTATION PARTNER FOUND.`}
+      </div>
+    </div>
+  ` : '';
+
   body.innerHTML = `
     <div class="detail-left">
       <div class="detail-portrait">${portraitSVG(p.head)}</div>
@@ -5337,10 +6167,33 @@ function renderPlayerDetail() {
       <div class="detail-attrs">
         ${['IQ','SHT','DEF','PST','FIN','PSS'].map(attrLine).join('')}
       </div>
+      ${rotationHTML}
       <div style="color:#4caf50;font-size:9px;letter-spacing:1px;">${fmtMoney(yearlyValue(ovr))}</div>
     </div>
     <div class="detail-gear">${slotsHTML}</div>
   `;
+
+  const minutesInput = body.querySelector('#detail-minutes');
+  if (minutesInput) {
+    minutesInput.addEventListener('change', () => {
+      setPlayerRotationMinutes(p, minutesInput.value);
+      state.lineup = sortLineupPlayers(state.lineup);
+      renderLineup();
+      if (!document.getElementById('inv-modal').classList.contains('hidden')) renderInventory();
+      renderPlayerDetail();
+    });
+  }
+
+  const promoteBtn = body.querySelector('#detail-promote-btn');
+  if (promoteBtn && !promoteBtn.disabled && partner) {
+    promoteBtn.addEventListener('click', () => {
+      swapPlayerRotationSlots(p, partner);
+      state.lineup = sortLineupPlayers(state.lineup);
+      renderLineup();
+      if (!document.getElementById('inv-modal').classList.contains('hidden')) renderInventory();
+      renderPlayerDetail();
+    });
+  }
 
   body.querySelectorAll('.gear-slot').forEach(el => {
     el.addEventListener('click', () => {
@@ -5426,14 +6279,27 @@ function renderPlaystyle() {
   body.innerHTML =
     group('DEFENSE TYPE',     'defense',   DEFENSE_TYPES) +
     group('OFFENSIVE STYLE',  'offense',   OFFENSE_STYLES) +
-    group('DEFENSIVE STYLE',  'defensive', DEFENSIVE_STYLES);
+    group('DEFENSIVE STYLE',  'defensive', DEFENSIVE_STYLES) +
+    `<div class="style-group">
+       <div class="style-group-label">ROTATION MINUTES</div>
+       <button id="open-minutes-btn" class="style-tile" style="width:100%;height:auto;padding:14px;">ADJUST MINUTES</button>
+     </div>`;
 
-  body.querySelectorAll('.style-tile').forEach(btn => {
+  body.querySelectorAll('.style-tile[data-key]').forEach(btn => {
     btn.addEventListener('click', () => {
       state.playstyle[btn.dataset.key] = btn.dataset.val;
       renderPlaystyle();
     });
   });
+
+  const minutesBtn = body.querySelector('#open-minutes-btn');
+  if (minutesBtn) {
+    minutesBtn.addEventListener('click', () => {
+      SFX.whoosh();
+      renderMinutes();
+      document.getElementById('minutes-modal').classList.remove('hidden');
+    });
+  }
 }
 
 document.getElementById('style-btn').addEventListener('click', () => {
@@ -5445,7 +6311,81 @@ document.getElementById('style-close').addEventListener('click', () => {
   document.getElementById('style-modal').classList.add('hidden');
 });
 
+/* ═══════════════ MINUTES MODAL ═══════════════ */
+function renderMinutes() {
+  const body = document.getElementById('minutes-body');
+  const rows = POSITIONS.map(pos => {
+    const players = state.lineup.filter(p => p.position === pos);
+    if (players.length < 2) return '';
+    const starter = players.find(p => p.rotationRole === 'starter') || players[0];
+    const bench   = players.find(p => p !== starter);
+    const sIdx = state.lineup.indexOf(starter);
+    const bIdx = state.lineup.indexOf(bench);
+    const sMin = Math.round(starter.targetMinutes);
+    const bMin = Math.round(bench.targetMinutes);
+
+    const slot = (p, idx, role) => `
+      <div class="minutes-slot ${role === 'starter' ? 'starter' : ''}">
+        <div class="minutes-slot-role">${role === 'starter' ? 'STARTER' : 'BENCH'}</div>
+        <div class="minutes-slot-name">${p.name.toUpperCase()}</div>
+        <div class="minutes-slot-ovr">OVR ${getEffectiveOVR(p)}</div>
+        <div class="minutes-slot-controls">
+          <button type="button" class="minutes-slot-btn" data-idx="${idx}" data-delta="-1">-</button>
+          <input class="minutes-slot-input" type="number" min="0" max="${TOTAL_GAME_MINUTES}" value="${Math.round(p.targetMinutes)}" data-idx="${idx}">
+          <button type="button" class="minutes-slot-btn" data-idx="${idx}" data-delta="1">+</button>
+          <span class="minutes-slot-unit">MIN</span>
+        </div>
+      </div>
+    `;
+
+    const sPct = Math.max(0, Math.min(100, (sMin / TOTAL_GAME_MINUTES) * 100));
+    return `
+      <div class="minutes-row">
+        <div class="minutes-row-label">— ${pos} —</div>
+        <div class="minutes-row-split">
+          ${slot(starter, sIdx, 'starter')}
+          ${slot(bench, bIdx, 'bench')}
+        </div>
+        <div class="minutes-bar">
+          <div class="minutes-bar-starter" style="width:${sPct}%"></div>
+          <div class="minutes-bar-bench" style="width:${100 - sPct}%"></div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  body.innerHTML = `
+    <div class="minutes-total-note">EACH POSITION TOTALS ${TOTAL_GAME_MINUTES} MIN — PARTNER AUTO-ADJUSTS</div>
+    ${rows}
+  `;
+
+  body.querySelectorAll('.minutes-slot-input').forEach(input => {
+    input.addEventListener('change', () => {
+      setPlayerRotationMinutes(state.lineup[+input.dataset.idx], input.value);
+      state.lineup = sortLineupPlayers(state.lineup);
+      renderMinutes();
+      renderLineup();
+    });
+  });
+
+  body.querySelectorAll('.minutes-slot-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const p = state.lineup[+btn.dataset.idx];
+      setPlayerRotationMinutes(p, Math.round(p.targetMinutes) + (+btn.dataset.delta));
+      state.lineup = sortLineupPlayers(state.lineup);
+      renderMinutes();
+      renderLineup();
+    });
+  });
+}
+
+document.getElementById('minutes-close').addEventListener('click', () => {
+  document.getElementById('minutes-modal').classList.add('hidden');
+});
+
 document.getElementById('detail-close').addEventListener('click', () => {
+  detailPlayerIdx = null;
+  detailPlayerRef = null;
   document.getElementById('detail-modal').classList.add('hidden');
 });
 document.getElementById('gear-close').addEventListener('click', () => {
@@ -5467,6 +6407,88 @@ document.addEventListener('click', (e) => {
     try { SFX.click(); } catch (err) {}
   }
 }, true);
+
+/* ═══════════════════════ LOADING / PRE-WARM ═══════════════════════ */
+async function runLoadingScreen() {
+  const loading = document.getElementById('loading');
+  const bar     = document.getElementById('loading-bar-fill');
+  const status  = document.getElementById('loading-status');
+  const warm    = document.getElementById('loading-warm');
+
+  loading.classList.add('active');
+
+  const t0 = performance.now();
+  const MIN_DURATION = 1800;
+  let progress = 0;
+  const setProgress = (p) => {
+    progress = Math.max(progress, p);
+    bar.style.width = (progress * 100).toFixed(1) + '%';
+    status.textContent = Math.round(progress * 100) + '%';
+  };
+  const nextFrame = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+
+  setProgress(0.05, 'LOADING FONT…');
+  try { await (document.fonts && document.fonts.ready); } catch (e) {}
+  setProgress(0.2, 'ALLOCATING LAYERS…');
+  await nextFrame();
+
+  // Pre-warm pack-modal compositor layers (backdrop-filter, blur, drop-shadow)
+  const packModal = document.getElementById('pack-modal');
+  const packBurst = document.getElementById('pack-burst-fullscreen');
+  if (packModal) {
+    packModal.style.visibility = 'hidden';
+    packModal.classList.remove('hidden');
+    await nextFrame();
+    packModal.classList.add('tension-build');
+    await nextFrame();
+    packModal.classList.remove('tension-build');
+    packModal.classList.add('hidden');
+    packModal.style.visibility = '';
+  }
+  setProgress(0.45, 'PRIMING EFFECTS…');
+  if (packBurst) {
+    const prevDisp = packBurst.style.display;
+    packBurst.style.visibility = 'hidden';
+    packBurst.style.display = 'block';
+    await nextFrame();
+    packBurst.style.display = prevDisp;
+    packBurst.style.visibility = '';
+  }
+  setProgress(0.6, 'RENDERING ART…');
+
+  // Rasterize all SVG art by mounting it offscreen
+  try {
+    const chunks = [];
+    if (typeof PACK_ART === 'object')    Object.values(PACK_ART).forEach(s => chunks.push(s));
+    if (typeof ECONOMY_ART === 'object') Object.values(ECONOMY_ART).forEach(s => chunks.push(s));
+    if (typeof GEAR_ART === 'object')    Object.values(GEAR_ART).forEach(s => chunks.push(s));
+    warm.innerHTML = chunks.join('');
+    await nextFrame();
+  } catch (e) {}
+  setProgress(0.8, 'UNLOCKING AUDIO…');
+
+  // Nudge the audio graph so the first in-game SFX doesn't stutter
+  try {
+    if (typeof MUSIC !== 'undefined' && MUSIC.play) MUSIC.play();
+  } catch (e) {}
+  setProgress(0.92, 'READY');
+
+  const elapsed = performance.now() - t0;
+  if (elapsed < MIN_DURATION) await new Promise(r => setTimeout(r, MIN_DURATION - elapsed));
+  setProgress(1, 'READY');
+
+  await new Promise(r => setTimeout(r, 220));
+
+  loading.style.transition = 'opacity 0.45s';
+  loading.style.opacity = '0';
+  setTimeout(() => {
+    loading.classList.remove('active');
+    loading.style.opacity = '';
+    loading.style.transition = '';
+    warm.innerHTML = '';
+    document.getElementById('home').classList.add('active');
+  }, 460);
+}
 
 /* ═══════════════════════ INTRO – DASHAUN STUDIOS ═══════════════════════ */
 (function () {
@@ -5494,7 +6516,7 @@ document.addEventListener('click', (e) => {
       intro.classList.remove('active');
       intro.style.opacity = '';
       intro.style.transition = '';
-      document.getElementById('home').classList.add('active');
+      runLoadingScreen();
     }, 500);
   }
   document.getElementById('intro-skip').addEventListener('click', finishIntro);
